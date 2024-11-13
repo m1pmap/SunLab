@@ -1,0 +1,93 @@
+﻿.navigation {
+    margin: 17px;
+}
+
+.activity,
+.healthyFood,
+.analitics,
+.bodyHealth {
+    background: rgba(139, 75, 188, 0.25);
+    position: relative;
+    border-radius: 15px;
+    height: 50px;
+    width: 100%;
+    overflow: hidden;
+    display: flex; /* Включаем Flexbox */
+    justify-content: center; /* Центрируем по горизонтали */
+    align-items: center; /* Центрируем по вертикали */
+    transform: translateY(100%);
+    transition: all 0.5s;
+    opacity: 0;
+    margin-bottom: 20px;
+}
+
+.bodyHealth {
+    background: rgba(190,75,75,0.25);
+    transform: translateY(115%);
+}
+
+.healthyFood {
+    background: rgba(100,134,83,0.25);
+    transform: translateY(130%);
+}
+
+.analitics {
+    background: rgba(78, 171, 191, 0.25);
+    transform: translateY(145%);
+}
+
+    .activity.active,
+    .healthyFood.active,
+    .analitics.active,
+    .bodyHealth.active {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .activity p,
+    .healthyFood p,
+    .analitics p,
+    .bodyHealth p {
+        position: absolute;
+        margin: 0; /* Убираем отступы */
+        padding: 0; /* Убираем отступы */
+        font-size: 175%;
+        text-align: center;
+        color: var(--tg-theme-bg-color);
+    }
+
+.waves {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100px; /* Настройте высоту по необходимости */
+}
+
+.parallax > use {
+    animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
+}
+
+    .parallax > use:nth-child(1) {
+        animation-delay: -2s;
+        animation-duration: 10s;
+    }
+
+    .parallax > use:nth-child(2) {
+        animation-delay: -3s;
+        animation-duration: 15s;
+    }
+
+    .parallax > use:nth-child(3) {
+        animation-delay: -4s;
+        animation-duration: 20s;
+    }
+
+@keyframes move-forever {
+    0% {
+        transform: translate3d(-90px, 0, 0);
+    }
+
+    100% {
+        transform: translate3d(85px, 0, 0);
+    }
+}

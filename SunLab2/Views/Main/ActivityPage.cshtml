@@ -1,0 +1,121 @@
+﻿<div class="activityPage">
+    <h2 class="activityPageName">Activity</h2>
+
+    <div class="stepsContainer">
+        <div class="stepsInfo">
+            <input type="number" class="steps" maxlength="6" value="508" onfocus="inputClick()"></input>
+            <p>steps today</p>
+        </div>
+
+        <button class="stepsMoreButton" onclick="HideStepsMoreInfo()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50" fill="var(--tg-theme-bg-color)">
+                <path d="M7 10l5 5 5-5H7z" />
+            </svg>
+        </button>
+    </div>
+
+    <div class="distInfo">
+        <p class="distantion">~0.584km passed</p>
+    </div>
+
+    <div class="caloriesInfo">
+        <p class="calories">~20kcal burned</p>
+    </div>
+
+    <div class="stepsMoreInfo">
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <p class="stepsDescription">your weakly activity</p>
+
+    <div class="weightContainer">
+        <div class="weightInfo">
+            <p class="weightText">65</p>
+            <p class="smallWeightText">kg weight now</p>
+        </div>
+
+        <button class="weightMoreButton" onclick="HideWeightMoreInfo()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50" fill="var(--tg-theme-bg-color)">
+                <path d="M7 10l5 5 5-5H7z" />
+            </svg>
+        </button>
+    </div>
+
+    <button class="addNewWeightButton" onclick="openAddWidthMenu()" disabled>add new weight</button>
+
+    <div class="addNewWeight">
+        <div class="newWeight">
+            <input type="number" class="newWeightInput" value="0" onfocus="inputClick()">
+            <p>kg</p>
+        </div>
+
+        <button class="addWeight" disabled><p>+</p></button>
+
+        <button class="back" onclick="hideAddWeightMenu()" disabled>
+            <p>x</p>
+        </button>
+    </div>
+
+    <div class="weightMoreInfo">
+        <canvas id="weightChart"></canvas>
+    </div>
+
+    <p class="weightDescription">your weight statistics</p>
+
+    <div class="heightContainer">
+        <div class="heightInfo">
+            <p class="heightText">183</p>
+            <p class="smallHeightText">cm height now</p>
+        </div>
+        <button class="heightMoreButton" onclick="HideHeightMoreInfo()">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="50" height="50" fill="var(--tg-theme-bg-color)">
+                <path d="M7 10l5 5 5-5H7z" />
+            </svg>
+        </button>
+    </div>
+
+    <button class="addNewHeightButton" onclick="openAddHeightMenu()" disabled>add new height</button>
+
+    <div class="addNewHeight">
+        <div class="newHeight">
+            <input type="number" class="newHeightInput" value="0" onfocus="inputClick()">
+            <p>cm</p>
+        </div>
+
+        <button class="addHeight" disabled><p>+</p></button>
+
+        <button class="heightBack" onclick="hideAddHeightMenu()" disabled>
+            <p>x</p>
+        </button>
+    </div>
+
+    <div class="heightMoreInfo">
+        <canvas id="heightChart"></canvas>
+    </div>
+
+    <p class="heightDescription">your height statistics</p>
+
+    <div class="bedTimeController">
+        <input class="bedTimeCheckBox" type="checkbox">
+        Bedtime notification
+        </input>
+    </div>
+
+    <div class="bedTimeContainer">
+        <p>Bed</p>
+        <input type="time" class="bedTimeInput" value="22:00">
+        <p>Time</p>
+    </div>
+
+    <p class="adviciesText">Advicies</p>
+
+    <div class="stepsAdvicies">
+        <div class="stepsIndicator"></div>
+        <p class="stepsAdviciesText"> Well done. You have enough steps for this week. Stay healthy!</p>
+    </div>
+
+    <div class="WHAdvicies">
+        <div class="WHIndicator"></div>
+        <p class="WHAdviciesText"> Your weight is completely consistent with your height and you have nothing to worry about.</p>
+    </div>
+</div>

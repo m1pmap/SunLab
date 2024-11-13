@@ -1,0 +1,29 @@
+@font-face {
+    font-family: 'Arial Rounded MT Bold';
+    src: url('/assets/fonts/arialroundedmtbold.ttf') format('truetype'); /* Укажите правильный путь к файлу */
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    flex-direction: column;
+    height: 100vh; /* Задаем высоту на весь экран */
+    background: var(--tg-theme-bg-color);
+    color: var(--tg-theme-text-color);
+    user-select: none;
+    -webkit-user-select: none;
+    overflow-x: hidden;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    display: none; /* Скрыть ползунок */
+}
+
+.ggg {
+    height: 1500px;
+}

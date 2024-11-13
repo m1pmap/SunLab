@@ -1,0 +1,40 @@
+﻿@font-face {
+    font-family: 'Arial Rounded MT Bold';
+    src: url('/assets/fonts/arialroundedmtbold.ttf') format('truetype'); /* Укажите правильный путь к файлу */
+    font-weight: normal;
+    font-style: normal;
+}
+
+.welcomePageImage {
+    margin-top: 100px;
+    width: 100%;
+}
+
+.mainWelcomePageText {
+    text-align: center;
+    font-size: 3ch;
+    margin: 0;
+    padding: 0;
+}
+
+.aboutWelcomePageText {
+    text-align: center;
+    font-weight: lighter;
+    font-size: 1.5ch;
+    color: rgba(115, 114, 114, 0.75);
+}
+
+.arrow {
+    display: flex;
+    justify-content: center;
+}
+
+.arrowImage {
+    width: 5%;
+    transform: rotate(0deg);
+    transition: all 1s;
+}
+
+    .arrowImage.active {
+        transform: rotate(360deg);
+    }

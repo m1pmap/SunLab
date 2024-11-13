@@ -1,0 +1,154 @@
+﻿<div class="healthPage">
+    <h2 class="healthPageName">Health</h2>
+
+    <div class="healthButtons">
+        <div class="upContainer">
+            <button class="viralDiseasesButton"></button>
+
+            <div class="rightContainer">
+                <button class="chronicDiseasesButton"></button>
+
+                <button class="mentalDiseasesButton"></button>
+            </div>
+        </div>
+
+        <button class="otherButton"></button>
+    </div>
+
+    <div class="diseases viralDiseases">
+        <div class="ButtonsContainer virusButtonsContainer">
+            <button class="backButton virusBackButton" onclick="showAllHealthButtons('virus')">Back</button>
+            <button class="startVirusDiseaseButton" onclick="startDisease()">
+                <p>Start disease</p>
+            </button>
+        </div>
+
+        <div class="diseasesWriterContainer">
+            <div class="diseasesWriter">
+                <p>Enter the name of the disease</p>
+                <input class="diseasesWriterInput" type="text" onfocus="inputClick()"/>
+                <div class="diseasesWriterButtons">
+                    <button class="diseasesWriterAdd" onclick="WriterAdd()">Add</button>
+                    <button class="diseasesWriterNext">Next</button>
+                </div>
+            </div>
+
+            <div class="symptomsContainer">
+                @* <div class="symptom">Symptom</div> *@
+            </div>
+        </div>
+
+        @* <div class="symptom">Symptom</div> *@
+
+        
+    </div>
+
+    <div class="diseases chronicDiseases">
+        <div class="ButtonsContainer chronicButtonsContainer">
+            <button class="backButton chronicBackButton" onclick="showAllHealthButtons('chronic')">Back</button>
+            <button class="addChronicDiseaseButton">
+                <p>Add disease</p>
+            </button>
+        </div>
+    </div>
+
+    <div class="diseases mentalDiseases">
+        <div class="ButtonsContainer mentalButtonsContainer">
+            <button class="backButton mentalBackButton" onclick="showAllHealthButtons('mental')">Back</button>
+            <button class="addMentalDiseaseButton">
+                <p>Add disease</p>
+            </button>
+        </div>
+
+        <div class="CalmContainer">
+            <button class="calmingButton" onclick="calming()">
+                <p>Calming</p>
+            </button>
+        </div>
+        <p class="calmingInstructor">Relax and get comfortable</p>
+
+
+        <button class="diseasesHistoryButton">
+            <p>My diseases history</p>
+        </button>
+
+        <button class="moodTrackerButton" onclick="showMoods()">
+            <p>Select your daily mood</p>
+        </button>
+
+        <div class="MoodsContainer">
+            <div class="moodsRowContainer">
+                <div class="image-grid" id="dataGrid1">
+                    <button class="image-button" onclick="createMoodTracker('happy2')">
+                        <img src="/assets/images/happy2.png" alt="Happy 1">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('bigSmile1')">
+                        <img src="/assets/images/bigSmile1.png" alt="Big Smile">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('smile1')">
+                        <img src="/assets/images/smile1.png" alt="Smile">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('cool2')">
+                        <img src="/assets/images/cool2.png" alt="Cool 1">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('kiss1')">
+                        <img src="/assets/images/kiss1.png" alt="Kiss">
+                    </button>
+                </div>
+            </div>
+
+            <!-- Второй ряд с 4 элементами -->
+            <div class="moodsRowContainer">
+                <div class="image-grid" id="dataGrid2">
+                    <button class="image-button" onclick="createMoodTracker('sleepy1')">
+                        <img src="/assets/images/sleepy1.png" alt="Sleepy">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('surprised1')">
+                        <img src="/assets/images/surprised1.png" alt="Surprised">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('confused1')">
+                        <img src="/assets/images/confused1.png" alt="Confused">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('crying1')">
+                        <img src="/assets/images/crying1.png" alt="Crying">
+                    </button>
+                </div>
+            </div>
+            
+
+            <!-- Третий ряд с 5 элементами -->
+            <div class="moodsRowContainer">
+                <div class="image-grid" id="dataGrid3">
+                    <button class="image-button" onclick="createMoodTracker('sick1')">
+                        <img src="/assets/images/sick1.png" alt="Sick">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('cursing1')">
+                        <img src="/assets/images/cursing1.png" alt="Cursing">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('devil1')">
+                        <img src="/assets/images/devil1.png" alt="Devil">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('clown1')">
+                        <img src="/assets/images/clown1.png" alt="Clown">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('skull1')">
+                        <img src="/assets/images/skull1.png" alt="Skull">
+                    </button>
+                </div>
+            </div>
+            </div>
+
+        <div class="MoodTrackerContainer">
+            <div class="moodDataGrid"></div>
+        </div>
+    </div>
+
+    <div class="diseases otherDiseases">
+        <div class="ButtonsContainer otherButtonsContainer">
+            <button class="backButton otherBackButton" onclick="showAllHealthButtons('other')">Back</button>
+            <button class="addOtherDiseaseButton">
+                <p>Add disease</p>
+            </button>
+        </div>
+    </div>
+</div>

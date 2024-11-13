@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SunLab2", "SunLab2\SunLab2.csproj", "{1415A235-A062-450E-B198-15F5ED02F686}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SunLab2.DAL", "SunLab2.DAL\SunLab2.DAL.csproj", "{401D783B-A53E-455D-B80F-4ACF052899ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1415A235-A062-450E-B198-15F5ED02F686}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1415A235-A062-450E-B198-15F5ED02F686}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1415A235-A062-450E-B198-15F5ED02F686}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1415A235-A062-450E-B198-15F5ED02F686}.Release|Any CPU.Build.0 = Release|Any CPU
+		{401D783B-A53E-455D-B80F-4ACF052899ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{401D783B-A53E-455D-B80F-4ACF052899ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{401D783B-A53E-455D-B80F-4ACF052899ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{401D783B-A53E-455D-B80F-4ACF052899ED}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {944A70FC-71B5-451F-B4F5-E197DD70BD1B}
+	EndGlobalSection
+EndGlobal

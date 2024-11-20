@@ -12,7 +12,7 @@ namespace SunLab2.DAL.Interfaces
     {
         bool Add_User(User user);
         bool UserExists(User user);
-
-        int GetUserIdByUsernameAsync(string username);
+        User ConnectUserDiseases(User user);
+        User GetUserByUsername(string username);
     }
 }

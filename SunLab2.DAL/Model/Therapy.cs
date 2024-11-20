@@ -7,14 +7,15 @@ using System.Threading.Tasks;
 
 namespace SunLab2.DAL.Model
 {
-    public class User
+    public class Therapy
     {
         [Key]
-        public int UserID { get; set; }
-        
+        public int TherapyID { get; set; }
         [MaxLength(60)]
-        public string UserName { get; set; }
+        public string TherapyName { get; set; }
+        public int DiseaseId { get; set; }
 
-        public virtual ICollection<Disease> Diseases { get; set; } = new List<Disease>();
+
+        public virtual Disease Disease { get; set; }
     }
 }

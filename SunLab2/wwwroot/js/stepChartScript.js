@@ -5,10 +5,10 @@ document.addEventListener('DOMContentLoaded', function () {
     myChart = new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            labels: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
             datasets: [{
                 label: 'steps',
-                data: [2800, 3581, 5224, 2324, 1478, 3485, 2521],
+                data: [0, 0, 0, 0, 0, 0, 0],
                 borderWidth: 3,
                 borderColor: 'rgba(112, 1, 145, 0.5)'
             }],

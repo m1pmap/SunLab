@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace SunLab2.DAL.Interfaces
 {
-    public interface IVirusDisease
+    public interface ITherapy
     {
-        bool Add_VirusDisease(VirusDisease virusDisease);
+        bool Add_Therapy( Therapy therapy);
+
     }
 }

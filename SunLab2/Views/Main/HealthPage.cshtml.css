@@ -6,6 +6,10 @@
     width: 100%;
 }
 
+p{
+    margin: 0;
+}
+
 .healthPageName {
     /*color: var(--tg-theme-text-color);*/
     transition: 0.5s ease;
@@ -13,7 +17,9 @@
 
 button,
 .diseasesWriter,
-.symptom {
+.symptom,
+.entity,
+.endButton {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -150,7 +156,9 @@ button,
 .diseasesWriter,
 .diseasesWriterNext,
 .diseasesWriterAdd,
-.symptom {
+.symptom,
+.therapy,
+.endButton {
     margin-top: 10px;
     height: 45px;
     transition: 1s ease;
@@ -159,13 +167,36 @@ button,
     opacity: 0;
 }
 
-.symptom {
+.entity {
+    margin-top: 10px;
+    height: 45px;
+    transition: 1s ease;
+    margin-left: 20px;
+    width: calc(100% - 40px);
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px); /* Начальная позиция */
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0); /* Конечная позиция */
+    }
+}
+
+.symptom,
+.entity,
+.endButton {
     opacity: 1;
+    transition: 0.5s ease;
+    animation: fadeIn 0.5s ease;
 }
 
 .diseasesWriterNext{
     margin-left: 0;
-    width: 30%;
+    width: 40%;
     display: none;
 }
 
@@ -177,6 +208,7 @@ button,
     height: auto;
     display: block;
     padding-bottom: 10px;
+    transition: 0.5s ease;
 }
 
 .diseasesWriter p {
@@ -207,7 +239,9 @@ button,
 }
 
 button p,
-.symptom p {
+.symptom p,
+.entity p,
+.endButton p {
     font-size: 23px;
     text-align: center;
     margin: 0;
@@ -318,4 +352,167 @@ button p,
 #dataGrid1,
 #dataGrid3 {
     grid-template-columns: repeat(5, 1fr); /* 4 колонки для первого и третьего ряда */
+}
+
+.severityTypesContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10px;
+    transition: 0.5s ease;
+    height: 45px;
+    animation: fadeIn 0.5s ease;
+}
+
+.severity {
+    opacity: 1;
+    margin-right: 5px;
+    margin-left: 5px;
+    width: 90px;
+}
+
+.EasySeverity {
+    background-color: rgba(100,134,83,0.7);
+}
+
+.MidSeverity {
+    background-color: rgba(255, 207, 64, 0.7);
+}
+
+.HardSeverity {
+    background-color: rgba(190,75,75,0.7);
+}
+
+.symptomsContainer {
+    transition: 0.5s ease;
+}
+
+.symptomsSeverityContainer {
+    display: none;
+    opacity: 0;
+    transition: 0.5s ease;
+}
+
+.symptomsSeverityContainer p,
+.therapiesContainer  p{
+    margin: 0;
+    margin-top: 10px;
+}
+
+.therapy {
+    margin-left: 25px;
+    width: calc(100% - 50px);
+    opacity: 1;
+    animation: fadeIn 0.5s ease;
+    transition: 0.5s ease;
+}
+
+.therapiesContainer {
+    display: none;
+    opacity: 0;
+    transition: 0.5s ease;
+}
+
+.currentDisease p{
+    margin-bottom: -10px;
+}
+
+.new{
+    margin-left: 50px;
+    width: calc(100% - 100px);
+}
+
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100%; /* Увеличьте на 100% для каждого слайда */
+}
+
+.slide {
+    width: 100%; /* Каждый слайд занимает 100% ширины контейнера */
+    flex-shrink: 0; /* Не позволяйте слайдам сжиматься */
+}
+
+.diseaseNameInput {
+    margin-top: 10px;
+    width: 90%;
+    font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
+    font-size: 23px;
+    border: none;
+    text-align: center;
+    background: transparent;
+    color: rgba(115, 114, 114, 0.75);
+}
+
+.slide h2,
+.slide p {
+    margin: 10px;
+}
+
+.button-container {
+    display: flex; /* Используем flexbox для размещения кнопок в строку */
+    justify-content: space-between; /* Размещаем кнопки по краям контейнера */
+    width: 100%; /* Ширина контейнера */
+    max-width: 300px; /* Максимальная ширина контейнера (можно изменить) */
+    margin: 20px auto; /* Центрируем контейнер */
+    margin-bottom: -70px;
+}
+
+.Arrow {
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.7);
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 10;
+    opacity: 1;
+}
+
+.left {
+    color: rgba(115, 114, 114, 0.75);
+    background-color: transparent;
+    left: 10px; /* Положение стрелки влево */
+    font-size: 25px;
+}
+
+.right {
+    color: rgba(115, 114, 114, 0.75);
+    background-color: transparent;
+    right: 10px; /* Положение стрелки вправо */
+    font-size: 25px;
+}
+
+.currentDisease{
+    display: none;
+    transition: 1s ease;
+    opacity: 0;
+}
+
+.entityInput {
+    text-align: center; /* Центрирование текста */
+    border: none; /* Убираем обводку */
+    outline: none; /* Убираем обводку при фокусе */
+    background-color: transparent;
+    color: var(--tg-theme-bg-color);
+    transition: 0.5s ease;
+}
+
+.entityInput:focus {
+    outline: none; /* Убираем обводку при фокусе */
+    box-shadow: none; /* Убираем тень (если есть) */
+}
+
+::placeholder {
+    color: var(--tg-theme-bg-color);
 }

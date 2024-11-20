@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SunLab2.DAL;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace SunLab2.DAL.Repository
 {
@@ -39,25 +40,47 @@ namespace SunLab2.DAL.Repository
             }
         }
 
-        public int GetUserIdByUsernameAsync(string username)
+        public User GetUserByUsername(string username)
         {
             // Проверяем, не является ли имя пустым или null
             if (string.IsNullOrEmpty(username))
             {
-                return 0; // Или выбросьте исключение, если это необходимо
+                return null; // Или выбросьте исключение, если это необходимо
             }
             else
             {
                 using (ApplicationContext db = new ApplicationContext())
                 {
-                    var user = db.Users.FirstOrDefault(u => u.UserName == username);
-
-                    // Возвращаем идентификатор пользователя или null, если пользователь не найден
-                    return user.UserID;
+                    return db.Users.FirstOrDefault(u => u.UserName == username);
                 }
             }
+        }
+        public User ConnectUserDiseases(User user)
+        {
+            try
+            {
+                User connectedUser = new User();
 
-            // Ищем пользователя по имени
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    connectedUser = db.Users
+                        .Include(u => u.Diseases)
+                            .ThenInclude(d => d.Symptoms)
+                        .Include(u => u.Diseases)
+                            .ThenInclude(d => d.Therapies)
+                        .Include(u => u.Diseases)
+                            .ThenInclude(d => d.Drugs)
+                        .FirstOrDefault(u => u.UserID == user.UserID);
+                }
+
+                return connectedUser;
+            }
+            catch (Exception ex)
+            {
+                var innerEx = ex.InnerException;
+                Debug.WriteLine(innerEx?.Message); // Используем оператор null-условного доступа
+                return null;
+            }
         }
     }
 }

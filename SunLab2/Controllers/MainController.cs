@@ -6,6 +6,9 @@ using SunLab2.DAL.Interfaces;
 using SunLab2.DAL.Model;
 using System;
 using Microsoft.EntityFrameworkCore;
+using SunLab2.DAL.Repository;
+using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace SunLab2.Controllers
 {
@@ -13,13 +16,19 @@ namespace SunLab2.Controllers
     {
         private readonly ILogger<MainController> _logger;
         private readonly IUser _userRepository;
-        private readonly IVirusDisease _virusDiseaseRepository;
+        private readonly IDisease _diseaseRepository;
+        private readonly ISymptom _symptomRepository;
+        private readonly ITherapy _therapyRepository;
+        private readonly IDrug _drugRepository;
 
-        public MainController(ILogger<MainController> logger, IUser userRepository, IVirusDisease virusDiseaseRepository)
+        public MainController(ILogger<MainController> logger, IUser userRepository, IDisease DiseaseRepository, ISymptom SymptomRepository, ITherapy TherapyRepository, IDrug DrugRepository)
         {
             _logger = logger;
             _userRepository = userRepository;
-            _virusDiseaseRepository = virusDiseaseRepository;
+            _diseaseRepository = DiseaseRepository;
+            _therapyRepository = TherapyRepository;
+            _drugRepository = DrugRepository;
+            _symptomRepository = SymptomRepository;
         }
 
         public IActionResult Index()
@@ -28,17 +37,18 @@ namespace SunLab2.Controllers
         }
 
         [HttpPost]
-        public void AddUser(string userName)
+        public IActionResult AddUser(string userName)
         {
             HttpContext.Session.SetString("UserName", userName);
-            var user = new User {UserName = userName}; // Создание нового пользователя
+            var user = new User { UserName = userName }; // Создание нового пользователя
             if (_userRepository.UserExists(user))
             {
                 Debug.WriteLine("User already exists");
+                User currentUser = _userRepository.GetUserByUsername(userName);
             }
             else
             {
-                bool result = _userRepository.Add_User(user); // Вызов метода добавления
+                bool result = _userRepository.Add_User(user);
                 if (result)
                 {
                     Debug.WriteLine($"User added succesfully: {userName}");
@@ -48,24 +58,93 @@ namespace SunLab2.Controllers
                     Debug.WriteLine($"Error added user: {userName}");
                 }
             }
+
+            string username = HttpContext.Session.GetString("UserName");
+
+
+            // Получаем пользователя по имени
+            User returnedUser = _userRepository.ConnectUserDiseases(_userRepository.GetUserByUsername(username));
+
+            if (returnedUser == null)
+            {
+                return NotFound();
+            }
+
+            var maxDisease = returnedUser.Diseases
+                .OrderByDescending(d => d.DiseaseId) // Сортируем по убыванию DiseaseId
+                .FirstOrDefault(); // Получаем первую (максимальную)
+
+            if (maxDisease == null)
+            {
+                return NotFound(); // Если нет болезней, возвращаем 404
+            }
+
+            // Возвращаем данные в формате JSON
+            return Json(new
+            {
+                diseaseName = maxDisease.DiseaseName,
+                symptoms = maxDisease.Symptoms.Select(s => s.SymptomName),
+                symptomSeverities = maxDisease.Symptoms.Select(s => s.SymptomSeverity),
+                therapies = maxDisease.Therapies.Select(t => t.TherapyName),
+                drugs = maxDisease.Drugs.Select(dr => dr.DrugName)
+            });
+
+        }
+
+        [HttpGet]
+        public IActionResult GetUserData()
+        {
+            string username = HttpContext.Session.GetString("UserName");
+            User user = _userRepository.ConnectUserDiseases(_userRepository.GetUserByUsername(username));
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Возвращаем данные в формате JSON
+            return Json(new
+            {
+                diseases = user.Diseases.Select(d => new
+                {
+                    diseaseName = d.DiseaseName,
+                    symptoms = d.Symptoms.Select(s => s.SymptomName),
+                    symptomSeverities = d.Symptoms.Select(s => s.SymptomSeverity),
+                    therapies = d.Therapies.Select(t => t.TherapyName),
+                    drugs = d.Drugs.Select(dr => dr.DrugName)
+                })
+            });
         }
 
         [HttpPost]
-        public void AddVirusDisease(string virusDiseaseName)
+        public void AddDisease(string diseaseName, string diseaseType, string symptoms, string symptomSeverities, string therapies, string drugs)
         {
-            string userName = HttpContext.Session.GetString("UserName");
-            Debug.WriteLine(userName);
-            Debug.WriteLine(_userRepository.GetUserIdByUsernameAsync(userName).ToString());
-            var virusDisease = new VirusDisease { VirusDiseaseName = virusDiseaseName, UserID = _userRepository.GetUserIdByUsernameAsync(userName) }; // Создание нового пользователя
-            bool result = _virusDiseaseRepository.Add_VirusDisease(virusDisease); // Вызов метода добавления
+            string username = HttpContext.Session.GetString("UserName");
 
-            if (result)
+            List<string> symptomsList = JsonSerializer.Deserialize<List<string>>(symptoms);
+            List<string> symptomSeveritiesList = JsonSerializer.Deserialize<List<string>>(symptomSeverities);
+            List<string> therapiesList = JsonSerializer.Deserialize<List<string>>(therapies);
+            List<string> drugsList = JsonSerializer.Deserialize<List<string>>(drugs);
+
+            Disease disease = new Disease { DiseaseName = diseaseName, DiseaseType = diseaseType, UserID = _userRepository.GetUserByUsername(username).UserID};
+            _diseaseRepository.Add_Disease(disease);
+
+            for (int i = 0; i < symptomsList.Count; i++) 
             {
-                Debug.WriteLine($"Virus added succesfully: {virusDiseaseName}");
+                Symptom symptom = new Symptom { SymptomName = symptomsList[i], SymptomSeverity = symptomSeveritiesList[i], DiseaseId = disease.DiseaseId };
+                _symptomRepository.Add_Symptom(symptom);
             }
-            else
+
+            for(int i = 0; i < therapiesList.Count; i++) 
             {
-                Debug.WriteLine($"Error added virus: {virusDiseaseName}");
+                Therapy therapy = new Therapy { TherapyName = therapiesList[i], DiseaseId = disease.DiseaseId };
+                _therapyRepository.Add_Therapy(therapy);
+            }
+
+            for(int i = 0; i < drugsList.Count; i++)
+            {
+                Drug drug = new Drug { DrugName = drugsList[i], DiseaseId = disease.DiseaseId };
+                _drugRepository.Add_Drug(drug);
             }
         }
     }

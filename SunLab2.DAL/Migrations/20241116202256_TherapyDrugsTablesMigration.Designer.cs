@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SunLab2.DAL;
 
@@ -10,9 +11,11 @@ using SunLab2.DAL;
 namespace SunLab2.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20241116202256_TherapyDrugsTablesMigration")]
+    partial class TherapyDrugsTablesMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,7 +145,7 @@ namespace SunLab2.DAL.Migrations
             modelBuilder.Entity("SunLab2.DAL.Model.Disease", b =>
                 {
                     b.HasOne("SunLab2.DAL.Model.User", "User")
-                        .WithMany("Diseases")
+                        .WithMany("VirusDiseases")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -194,7 +197,7 @@ namespace SunLab2.DAL.Migrations
 
             modelBuilder.Entity("SunLab2.DAL.Model.User", b =>
                 {
-                    b.Navigation("Diseases");
+                    b.Navigation("VirusDiseases");
                 });
 #pragma warning restore 612, 618
         }

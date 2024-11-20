@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SunLab2.DAL.Interfaces;
 using SunLab2.DAL.Model;
 
 namespace SunLab2.DAL
@@ -6,7 +7,10 @@ namespace SunLab2.DAL
     public class ApplicationContext : DbContext
     {
         public DbSet<User> Users { get; set; }
-        public DbSet<VirusDisease> VirusDiseases { get; set; }
+        public DbSet<Disease> Diseases { get; set; }
+        public DbSet<Symptom> Symptoms { get; set; }
+        public DbSet<Therapy> Therapies { get; set; }
+        public DbSet<Drug> Drugs { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -19,12 +23,26 @@ namespace SunLab2.DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // Связь один-ко-многим (One-to-Many)
             modelBuilder.Entity<User>()
-                .HasMany(u => u.VirusDiseases) // Один пользователь может иметь много заболеваний
+                .HasMany(u => u.Diseases) // Один пользователь может иметь много заболеваний
                 .WithOne(v => v.User) // Каждое заболевание связано с одним пользователем
                 .HasForeignKey(v => v.UserID) // Указываем внешний ключ
                 .OnDelete(DeleteBehavior.Cascade); // Устанавливаем каскадное удаление (по желанию)
+
+            modelBuilder.Entity<Disease>()
+                .HasMany(v => v.Symptoms) // Одна болезнь может иметь много симптомов
+                .WithOne(s => s.Disease) // Каждый симптом связан с одной болезнью
+                .HasForeignKey(s => s.DiseaseId);
+
+            modelBuilder.Entity<Disease>()
+                .HasMany(v => v.Therapies) // Одна болезнь может иметь много методов лечения
+                .WithOne(s => s.Disease) // Каждый симптом связан с одной болезнью
+                .HasForeignKey(s => s.DiseaseId);
+
+            modelBuilder.Entity<Disease>()
+                .HasMany(v => v.Drugs) // Одна болезнь может иметь много лекарств
+                .WithOne(s => s.Disease) // Каждый симптом связан с одной болезнью
+                .HasForeignKey(s => s.DiseaseId);
 
             base.OnModelCreating(modelBuilder);
         }

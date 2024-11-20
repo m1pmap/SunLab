@@ -9,24 +9,26 @@ using System.Threading.Tasks;
 
 namespace SunLab2.DAL.Repository
 {
-    public class VirusDisease_Repository : IVirusDisease
+    public class Drug_Repository : IDrug
     {
-        public bool Add_VirusDisease(VirusDisease virusDisease)
+        public bool Add_Drug(Drug drug)
         {
             try
             {
                 using (ApplicationContext db = new ApplicationContext())
                 {
-                    db.VirusDiseases.Add(virusDisease);
+                    db.Drugs.Add(drug);
                     db.SaveChanges();
                 }
 
+                Debug.WriteLine($"Successful addition of a drug: {drug.DrugName}");
                 return true;
             }
             catch(Exception ex) 
             {
                 var innerException = ex.InnerException;
                 Debug.WriteLine(innerException.Message);
+                Debug.WriteLine($"Error addition of a drug: {drug.DrugName}");
                 return false;
             }
         }

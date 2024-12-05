@@ -55,7 +55,7 @@ namespace SunLab2.DAL.Repository
                 }
             }
         }
-        public User ConnectUserDiseases(User user)
+        public User ConnectUserInformation(User user)
         {
             try
             {
@@ -66,10 +66,20 @@ namespace SunLab2.DAL.Repository
                     connectedUser = db.Users
                         .Include(u => u.Diseases)
                             .ThenInclude(d => d.Symptoms)
+                                .ThenInclude(ss => ss.SymptomSeverities)
                         .Include(u => u.Diseases)
                             .ThenInclude(d => d.Therapies)
                         .Include(u => u.Diseases)
                             .ThenInclude(d => d.Drugs)
+                                .ThenInclude(dr => dr.DrugTimes)
+                        .Include(u => u.Diseases)
+                            .ThenInclude(d => d.BloodAnalises)
+                        .Include(u => u.Diseases)
+                            .ThenInclude(d => d.UrineAnalises)
+                        .Include(u => u.MentalEmotions)
+                        .Include(u => u.Steps)
+                        .Include(u => u.Weights)
+                        .Include(u => u.Heights)
                         .FirstOrDefault(u => u.UserID == user.UserID);
                 }
 
@@ -80,6 +90,70 @@ namespace SunLab2.DAL.Repository
                 var innerEx = ex.InnerException;
                 Debug.WriteLine(innerEx?.Message); // Используем оператор null-условного доступа
                 return null;
+            }
+        }
+
+        public Disease GetCurrentVirusDisease(User _user)
+        {
+            try
+            {
+                User connectedUser = ConnectUserInformation(_user);
+                var currentDisease = connectedUser.Diseases
+                    .Where(d => d.DiseaseType == "Virus") 
+                    .OrderByDescending(d => d.DiseaseId)
+                    .FirstOrDefault();
+
+                return currentDisease;
+            }
+            catch (Exception ex)
+            {
+                var innerEx = ex.InnerException;
+                Debug.WriteLine(innerEx?.Message); // Используем оператор null-условного доступа
+                return null;
+            }
+        }
+
+        public Disease GetDiseaseByName(User user, string diseaseName, string diseaseType)
+        {
+            try
+            {
+                User connectedUser = ConnectUserInformation(user);
+                var chronicDisease = connectedUser.Diseases
+                    .FirstOrDefault(d => d.DiseaseType == diseaseType && d.DiseaseName == diseaseName);
+
+                return chronicDisease;
+            }
+            catch (Exception ex)
+            {
+                var innerEx = ex.InnerException;
+                Debug.WriteLine(innerEx?.Message); // Используем оператор null-условного доступа
+                return null;
+            }
+        }
+
+        public bool UpdateUserSleepTime(int userId, string newSleepTime)
+        {
+            try
+            {
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    var updateUser = db.Users.FirstOrDefault(u => u.UserID == userId );
+
+                    if (updateUser != null)
+                    {
+                        updateUser.sleepTime = newSleepTime;
+                        db.SaveChanges();
+                    }
+
+                    Debug.WriteLine($"Successful updating of a sleepTime on {newSleepTime}");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Debug.WriteLine($"Error updating of a sleepTime on {newSleepTime}");
+                return false;
             }
         }
     }

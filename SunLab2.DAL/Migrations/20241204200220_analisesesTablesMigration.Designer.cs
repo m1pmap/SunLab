@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SunLab2.DAL;
 
@@ -10,9 +11,11 @@ using SunLab2.DAL;
 namespace SunLab2.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20241204200220_analisesesTablesMigration")]
+    partial class analisesesTablesMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,8 +32,8 @@ namespace SunLab2.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BloodAnaliseID"));
 
-                    b.Property<double>("CP")
-                        .HasColumnType("float");
+                    b.Property<int>("CP")
+                        .HasColumnType("int");
 
                     b.Property<string>("Date")
                         .IsRequired()
@@ -39,26 +42,26 @@ namespace SunLab2.DAL.Migrations
                     b.Property<int>("DiseaseID")
                         .HasColumnType("int");
 
-                    b.Property<double>("ESR")
-                        .HasColumnType("float");
+                    b.Property<int>("ESR")
+                        .HasColumnType("int");
 
-                    b.Property<double>("HCT")
-                        .HasColumnType("float");
+                    b.Property<int>("HCT")
+                        .HasColumnType("int");
 
-                    b.Property<double>("HGB")
-                        .HasColumnType("float");
+                    b.Property<int>("HGB")
+                        .HasColumnType("int");
 
-                    b.Property<double>("PLT")
-                        .HasColumnType("float");
+                    b.Property<int>("PLT")
+                        .HasColumnType("int");
 
-                    b.Property<double>("RBC")
-                        .HasColumnType("float");
+                    b.Property<int>("RBC")
+                        .HasColumnType("int");
 
-                    b.Property<double>("RET")
-                        .HasColumnType("float");
+                    b.Property<int>("RET")
+                        .HasColumnType("int");
 
-                    b.Property<double>("WBC")
-                        .HasColumnType("float");
+                    b.Property<int>("WBC")
+                        .HasColumnType("int");
 
                     b.HasKey("BloodAnaliseID");
 
@@ -140,32 +143,6 @@ namespace SunLab2.DAL.Migrations
                     b.ToTable("DrugTimes");
                 });
 
-            modelBuilder.Entity("SunLab2.DAL.Model.Height", b =>
-                {
-                    b.Property<int>("HeightId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("HeightId"));
-
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("HeightValue")
-                        .HasMaxLength(60)
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("HeightId");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Heights");
-                });
-
             modelBuilder.Entity("SunLab2.DAL.Model.MentalEmotion", b =>
                 {
                     b.Property<int>("MentalEmotionID")
@@ -190,30 +167,6 @@ namespace SunLab2.DAL.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("MentalEmotions");
-                });
-
-            modelBuilder.Entity("SunLab2.DAL.Model.Step", b =>
-                {
-                    b.Property<int>("StepID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StepID"));
-
-                    b.Property<int>("Day")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StepsNum")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.HasKey("StepID");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Steps");
                 });
 
             modelBuilder.Entity("SunLab2.DAL.Model.Symptom", b =>
@@ -297,11 +250,11 @@ namespace SunLab2.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UrineAnaliseID"));
 
-                    b.Property<double>("BACT")
-                        .HasColumnType("float");
+                    b.Property<int>("BACT")
+                        .HasColumnType("int");
 
-                    b.Property<double>("BIL")
-                        .HasColumnType("float");
+                    b.Property<int>("BIL")
+                        .HasColumnType("int");
 
                     b.Property<string>("Date")
                         .IsRequired()
@@ -310,35 +263,35 @@ namespace SunLab2.DAL.Migrations
                     b.Property<int>("DiseaseID")
                         .HasColumnType("int");
 
-                    b.Property<double>("EC")
-                        .HasColumnType("float");
+                    b.Property<int>("EC")
+                        .HasColumnType("int");
 
-                    b.Property<double>("ER")
-                        .HasColumnType("float");
+                    b.Property<int>("ER")
+                        .HasColumnType("int");
 
-                    b.Property<double>("GEM")
-                        .HasColumnType("float");
+                    b.Property<int>("GEM")
+                        .HasColumnType("int");
 
-                    b.Property<double>("GLU")
-                        .HasColumnType("float");
+                    b.Property<int>("GLU")
+                        .HasColumnType("int");
 
-                    b.Property<double>("KET")
-                        .HasColumnType("float");
+                    b.Property<int>("KET")
+                        .HasColumnType("int");
 
-                    b.Property<double>("LE")
-                        .HasColumnType("float");
+                    b.Property<int>("LE")
+                        .HasColumnType("int");
 
-                    b.Property<double>("OP")
-                        .HasColumnType("float");
+                    b.Property<int>("OP")
+                        .HasColumnType("int");
 
-                    b.Property<double>("PRO")
-                        .HasColumnType("float");
+                    b.Property<int>("PRO")
+                        .HasColumnType("int");
 
-                    b.Property<double>("UBG")
-                        .HasColumnType("float");
+                    b.Property<int>("UBG")
+                        .HasColumnType("int");
 
-                    b.Property<double>("ph")
-                        .HasColumnType("float");
+                    b.Property<int>("ph")
+                        .HasColumnType("int");
 
                     b.HasKey("UrineAnaliseID");
 
@@ -360,39 +313,9 @@ namespace SunLab2.DAL.Migrations
                         .HasMaxLength(60)
                         .HasColumnType("nvarchar(60)");
 
-                    b.Property<string>("sleepTime")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.HasKey("UserID");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("SunLab2.DAL.Model.Weight", b =>
-                {
-                    b.Property<int>("WeightId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("WeightId"));
-
-                    b.Property<string>("Data")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("WeightValue")
-                        .HasMaxLength(60)
-                        .HasColumnType("int");
-
-                    b.HasKey("WeightId");
-
-                    b.HasIndex("UserID");
-
-                    b.ToTable("Weights");
                 });
 
             modelBuilder.Entity("SunLab2.DAL.Model.BloodAnalise", b =>
@@ -439,32 +362,10 @@ namespace SunLab2.DAL.Migrations
                     b.Navigation("Drug");
                 });
 
-            modelBuilder.Entity("SunLab2.DAL.Model.Height", b =>
-                {
-                    b.HasOne("SunLab2.DAL.Model.User", "User")
-                        .WithMany("Heights")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("SunLab2.DAL.Model.MentalEmotion", b =>
                 {
                     b.HasOne("SunLab2.DAL.Model.User", "User")
                         .WithMany("MentalEmotions")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("SunLab2.DAL.Model.Step", b =>
-                {
-                    b.HasOne("SunLab2.DAL.Model.User", "User")
-                        .WithMany("Steps")
                         .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -516,17 +417,6 @@ namespace SunLab2.DAL.Migrations
                     b.Navigation("Disease");
                 });
 
-            modelBuilder.Entity("SunLab2.DAL.Model.Weight", b =>
-                {
-                    b.HasOne("SunLab2.DAL.Model.User", "User")
-                        .WithMany("Weights")
-                        .HasForeignKey("UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("SunLab2.DAL.Model.Disease", b =>
                 {
                     b.Navigation("BloodAnalises");
@@ -554,13 +444,7 @@ namespace SunLab2.DAL.Migrations
                 {
                     b.Navigation("Diseases");
 
-                    b.Navigation("Heights");
-
                     b.Navigation("MentalEmotions");
-
-                    b.Navigation("Steps");
-
-                    b.Navigation("Weights");
                 });
 #pragma warning restore 612, 618
         }

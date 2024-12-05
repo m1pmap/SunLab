@@ -13,10 +13,10 @@ namespace SunLab2.DAL.Model
         public int SymptomID { get; set; }
         [MaxLength(60)]
         public string SymptomName { get; set; }
-        public string SymptomSeverity { get; set; }
         public int DiseaseId { get; set; }
 
 
         public virtual Disease Disease { get; set; }
+        public virtual ICollection<SymptomSeverity> SymptomSeverities { get; set; } = new List<SymptomSeverity>();
     }
 }

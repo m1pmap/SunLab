@@ -14,6 +14,14 @@ builder.Services.AddScoped<IDisease, Disease_Repository>();
 builder.Services.AddScoped<ISymptom, Symptom_Repository>();
 builder.Services.AddScoped<ITherapy, Therapy_Repository>();
 builder.Services.AddScoped<IDrug, Drug_Repository>();
+builder.Services.AddScoped<IDrugTime, DrugTime_Repository>();
+builder.Services.AddScoped<ISymptomSeverity, SymptomSeverity_Repository>();
+builder.Services.AddScoped<IMentalEmotion, MentalEmotion_Repository >();
+builder.Services.AddScoped<IBloodAnalise, BloodAnalise_Repository >();
+builder.Services.AddScoped<IUrineAnalise, UrineAnalise_Repository >();
+builder.Services.AddScoped<IStep, Step_Repository>();
+builder.Services.AddScoped<IWeight, Weight_Repository>();
+builder.Services.AddScoped<IHeight, Height_Repository>();
 
 builder.Services.AddDbContext<ApplicationContext>();
 

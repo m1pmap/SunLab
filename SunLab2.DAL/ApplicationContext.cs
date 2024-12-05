@@ -11,13 +11,17 @@ namespace SunLab2.DAL
         public DbSet<Symptom> Symptoms { get; set; }
         public DbSet<Therapy> Therapies { get; set; }
         public DbSet<Drug> Drugs { get; set; }
+        public DbSet<DrugTime> DrugTimes { get; set; }
+        public DbSet<SymptomSeverity> SymptomSeverities { get; set; }
+        public DbSet<MentalEmotion> MentalEmotions { get; set; }
+        public DbSet<BloodAnalise> BloodAnalises { get; set; }
+        public DbSet<UrineAnalise> UrineAnalises { get; set; }
+        public DbSet<Step> Steps{ get; set; }
+        public DbSet<Weight> Weights{ get; set; }
+        public DbSet<Height> Heights{ get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer(@"Server=MNS1-212N\SQLEXPRESS;Database=Test_DB;Trusted_Connection=True;MultipleActiveResultSets=true; TrustServerCertificate=True");
-            //optionsBuilder.UseSqlServer(@"Server=MNS1-212N\SQLEXPRESS; Database=Test_DB; AttachDbFilename="+ GlobalStatic_Class.connectionString + ";Trusted_Connection=True;MultipleActiveResultSets=true; Integrated Security=True;Connect Timeout=30; TrustServerCertificate=True");
-            //optionsBuilder.UseSqlServer("Data Source = (LocalDB)\\MSSQLLocalDB;  AttachDbFilename=" + ConnectionString_Global.Value + ";Trusted_Connection=True;MultipleActiveResultSets=true; Integrated Security=True;Connect Timeout=30; TrustServerCertificate=True");
-            //optionsBuilder.UseSqlServer("Data Source = (LocalDB)\\MSSQLLocalDB; Database=SunLabDB;  AttachDbFilename=C:\\Project\\Dahmira-New-Application-master\\Dahmira-New-Application-master\\bin\\Debug\\net8.0-windows\\Dahmira_TestDb11.mdf; Trusted_Connection=True;MultipleActiveResultSets=true; Integrated Security=True;Connect Timeout=30; TrustServerCertificate=True");
             optionsBuilder.UseSqlServer("Data Source = (LocalDB)\\MSSQLLocalDB; Database=SunLabDB;  AttachDbFilename=|DataDirectory|SunLabDB.mdf; Trusted_Connection=True;MultipleActiveResultSets=true; Integrated Security=True;Connect Timeout=30; TrustServerCertificate=True");
         }
 
@@ -27,7 +31,31 @@ namespace SunLab2.DAL
                 .HasMany(u => u.Diseases) // Один пользователь может иметь много заболеваний
                 .WithOne(v => v.User) // Каждое заболевание связано с одним пользователем
                 .HasForeignKey(v => v.UserID) // Указываем внешний ключ
-                .OnDelete(DeleteBehavior.Cascade); // Устанавливаем каскадное удаление (по желанию)
+                .OnDelete(DeleteBehavior.Cascade); //Каскадное удаление
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.MentalEmotions) // Один пользователь может иметь много эмоций
+                .WithOne(me => me.User) // Каждая эмоция связана с одним пользователем
+                .HasForeignKey(me => me.UserID) // Указываем внешний ключ
+                .OnDelete(DeleteBehavior.Cascade); //Каскадное удаление
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Steps) // Один пользователь может иметь много шагов
+                .WithOne(me => me.User) // Каждый шаг связана с одним пользователем
+                .HasForeignKey(me => me.UserID) // Указываем внешний ключ
+                .OnDelete(DeleteBehavior.Cascade); //Каскадное удаление
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Weights) // Один пользователь может иметь много весов
+                .WithOne(me => me.User) // Каждый вес связана с одним пользователем
+                .HasForeignKey(me => me.UserID) // Указываем внешний ключ
+                .OnDelete(DeleteBehavior.Cascade); //Каскадное удаление
+
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.Heights) // Один пользователь может иметь много ростов
+                .WithOne(me => me.User) // Каждый рост связана с одним пользователем
+                .HasForeignKey(me => me.UserID) // Указываем внешний ключ
+                .OnDelete(DeleteBehavior.Cascade); //Каскадное удаление
 
             modelBuilder.Entity<Disease>()
                 .HasMany(v => v.Symptoms) // Одна болезнь может иметь много симптомов
@@ -36,13 +64,33 @@ namespace SunLab2.DAL
 
             modelBuilder.Entity<Disease>()
                 .HasMany(v => v.Therapies) // Одна болезнь может иметь много методов лечения
-                .WithOne(s => s.Disease) // Каждый симптом связан с одной болезнью
+                .WithOne(s => s.Disease) // Каждый метод лечения связан с одной болезнью
                 .HasForeignKey(s => s.DiseaseId);
 
             modelBuilder.Entity<Disease>()
                 .HasMany(v => v.Drugs) // Одна болезнь может иметь много лекарств
-                .WithOne(s => s.Disease) // Каждый симптом связан с одной болезнью
+                .WithOne(s => s.Disease) // Каждое лекарство связано с одной болезнью
                 .HasForeignKey(s => s.DiseaseId);
+
+            modelBuilder.Entity<Disease>()
+                .HasMany(v => v.BloodAnalises) // Одна болезнь может иметь много анализов крови
+                .WithOne(s => s.Disease) // Каждый анализ крови связан с одной болезнью
+                .HasForeignKey(s => s.DiseaseID);
+
+            modelBuilder.Entity<Disease>()
+                .HasMany(v => v.UrineAnalises) // Одна болезнь может иметь много анализов мочи
+                .WithOne(s => s.Disease) // Каждый анализ мочи связан с одной болезнью
+                .HasForeignKey(s => s.DiseaseID);
+
+            modelBuilder.Entity<Drug>()
+                .HasMany(v => v.DrugTimes) // Одно лекарство может иметь несколько времени приёма
+                .WithOne(s => s.Drug) // Каждое время приёма связано с одним лекарством
+                .HasForeignKey(s => s.DrugId);
+
+            modelBuilder.Entity<Symptom>()
+                .HasMany(v => v.SymptomSeverities) // Одно лекарство может иметь несколько времени приёма
+                .WithOne(s => s.Symptom) // Каждое время приёма связано с одним лекарством
+                .HasForeignKey(s => s.SymptomId);
 
             base.OnModelCreating(modelBuilder);
         }

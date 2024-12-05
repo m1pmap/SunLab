@@ -17,6 +17,7 @@ p{
 
 button,
 .diseasesWriter,
+.analiseWriter,
 .symptom,
 .entity,
 .endButton {
@@ -31,8 +32,13 @@ button,
     background: rgba(96, 96, 96, 0.5);
     color: var(--tg-theme-bg-color);
     transition: 0.5s ease;
-    opacity: 0;
+    opacity: 1;
     font-size: 23px;
+    animation: fadeIn 0.5s ease;
+}
+
+.analiseWriter{
+    display: block;
 }
 
 /*Описание кнопок раздела Health*/
@@ -47,14 +53,34 @@ button,
 }
 
 .viralDiseasesButton {
-    width: 50%;
+    width: 50%; /* Ширина кнопки */
     background-color: rgba(139, 75, 188, 0.75);
-    height: 100%;
-    margin-right: 10px;
+    height: 100%; /* Высота кнопки */
+    margin-left: 0; /* Сдвиг кнопки влево */
     border-radius: 12px;
     transition: 0.7s ease;
-    border-width: 0;
     opacity: 1;
+    border: none; /* Убираем рамку */
+    position: relative;
+    overflow: hidden; /* Обрезаем содержимое, выходящее за пределы */
+    justify-content: end;
+    align-items: start;
+}
+
+.viralDiseasesButton img {
+    position:absolute;
+    object-fit: cover; /* Обрезаем изображение для заполнения области */
+}
+
+.viralDiseasesButton p{
+    position:absolute;
+    color: white;
+    bottom: 0;
+    font-size: 27px;
+    font-weight: bold;
+    margin: 0;
+    right: 10px;
+    text-align: right;
 }
 
 .rightContainer {
@@ -72,6 +98,16 @@ button,
     transition: 0.7s ease;
     border-width: 0;
     opacity: 1;
+    position: relative;
+    justify-content: center;
+    align-items: start;
+    overflow: hidden;
+}
+
+.otherButton img {
+    position: absolute;
+    object-fit: cover;
+    left: 0;
 }
 
 .mentalDiseasesButton {
@@ -82,6 +118,9 @@ button,
     transition: 0.7s ease;
     border-width: 0;
     opacity: 1;
+    justify-content: center;
+    align-items: start;
+    overflow: hidden;
 }
 
 .otherButton {
@@ -93,6 +132,14 @@ button,
     transition: 0.7s ease;
     border-width: 0;
     opacity: 1;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+.otherButton img {
+    position: absolute;
+    object-fit: cover;
 }
 
 
@@ -105,13 +152,15 @@ button,
 }
 
 .ButtonsContainer,
-.diseasesWriterButtons {
+.diseasesWriterButtons,
+.analiseWriterButtons{
     position: relative;
     display: flex;
     opacity: 0;
 }
 
-.diseasesWriterButtons {
+.diseasesWriterButtons,
+.analiseWriterButtons{
     opacity: 1;
 }
 
@@ -147,13 +196,14 @@ button,
     display: flex;
     align-items: center;
     justify-content: center;
-    opacity: 0;
+    opacity: 1;
 }
 
 .calmingButton,
 .diseasesHistoryButton,
 .moodTrackerButton,
 .diseasesWriter,
+.analiseWriter,
 .diseasesWriterNext,
 .diseasesWriterAdd,
 .symptom,
@@ -167,13 +217,25 @@ button,
     opacity: 0;
 }
 
-.entity {
+.calmingButton,
+.moodTrackerButton {
+    opacity: 1;
+}
+.entity,
+.analiseWriter {
     margin-top: 10px;
     height: 45px;
     transition: 1s ease;
     margin-left: 20px;
     width: calc(100% - 40px);
 }
+
+.analiseWriter {
+    opacity: 1;
+    height: auto;
+    animation: fadeIn 0.5s ease;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -417,9 +479,45 @@ button p,
     margin-bottom: -10px;
 }
 
-.new{
+.new {
     margin-left: 50px;
     width: calc(100% - 100px);
+}
+
+.drugTimeButtonsContainer {
+    display: flex;
+    margin-left: 50px;
+    width: calc(100% - 100px);
+}
+
+.add {
+    width: 75%;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.ok {
+    width: 25%;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.drugTimeInputContainer {
+    display: flex;
+    margin-left: 20px;
+    width: calc(100% - 40px);
+}
+
+.drugTime {
+    width: 80%;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.remove {
+    width: 20%;
+    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .container {
@@ -477,6 +575,7 @@ button p,
     padding: 10px;
     z-index: 10;
     opacity: 1;
+    animation: none;
 }
 
 .left {
@@ -495,7 +594,7 @@ button p,
 
 .currentDisease{
     display: none;
-    transition: 1s ease;
+    transition: 0.5s ease;
     opacity: 0;
 }
 
@@ -515,4 +614,47 @@ button p,
 
 ::placeholder {
     color: var(--tg-theme-bg-color);
+}
+
+.diseasesWriterContainer{
+    transition: 0.5s ease;
+}
+
+.drugTimeInput {
+    padding: 0;
+    height: 40px; /* Высота input */
+    background: transparent;
+    border-width: 0;
+    font-size: 30px;
+    margin-left: 0px;
+    margin-right: 0px;
+    font-family: 'Marmelad', sans-serif;
+    color: var(--tg-theme-bg-color);
+    transition: 1s ease-in-out;
+}
+
+.drugTimeContainer p {
+    transition: 0.5s ease;
+    animation: fadeIn 0.5s ease;
+}
+
+.symptomStatisticContainer {
+    position: relative;
+    background: rgba(96, 96, 96, 0.25);
+    margin: 25px;
+    margin-top: 10px;
+    border-radius: 15px;
+    transition: 0.7s ease-in-out;
+    animation: fadeIn 0.5s ease;
+}
+
+.symtomChart {
+    position: absolute;
+    z-index: 0;
+    margin: 5px;
+    transition: 0.6 ease-in-out;
+}
+
+.analiseWriterNext{
+    animation: none;
 }

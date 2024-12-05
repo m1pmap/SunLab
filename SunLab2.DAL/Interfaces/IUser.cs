@@ -12,7 +12,10 @@ namespace SunLab2.DAL.Interfaces
     {
         bool Add_User(User user);
         bool UserExists(User user);
-        User ConnectUserDiseases(User user);
+        User ConnectUserInformation(User user);
         User GetUserByUsername(string username);
+        Disease GetCurrentVirusDisease(User user);
+        Disease GetDiseaseByName(User user, string diseaseName, string diseaseType);
+        bool UpdateUserSleepTime(int userId, string newSleepTime);
     }
 }

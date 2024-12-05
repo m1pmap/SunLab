@@ -13,7 +13,7 @@ namespace SunLab2.DAL.Model
         [Key]
         public int DiseaseId { get; set; }
         [MaxLength(60)]
-        public string DiseaseName { get; set; }
+        public string DiseaseName { get; set; } = "";
         public string DiseaseType { get; set; }
 
         [ForeignKey("User")]
@@ -24,5 +24,7 @@ namespace SunLab2.DAL.Model
         public virtual ICollection<Symptom> Symptoms { get; set; } = new List<Symptom>();
         public virtual ICollection<Therapy> Therapies{ get; set; } = new List<Therapy>();
         public virtual ICollection<Drug> Drugs { get; set; } = new List<Drug>();
+        public virtual ICollection<BloodAnalise> BloodAnalises { get; set; } = new List<BloodAnalise>();
+        public virtual ICollection<UrineAnalise> UrineAnalises { get; set; } = new List<UrineAnalise>();
     }
 }

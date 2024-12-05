@@ -11,6 +11,7 @@
     <Content Remove="wwwroot\assets\images\arrow.png" />
     <Content Remove="wwwroot\assets\images\bigSmile.png" />
     <Content Remove="wwwroot\assets\images\bigSmile1.png" />
+    <Content Remove="wwwroot\assets\images\chronicButton.png" />
     <Content Remove="wwwroot\assets\images\clown1.png" />
     <Content Remove="wwwroot\assets\images\confused.png" />
     <Content Remove="wwwroot\assets\images\confused1.png" />
@@ -26,6 +27,8 @@
     <Content Remove="wwwroot\assets\images\happy2.png" />
     <Content Remove="wwwroot\assets\images\kiss.png" />
     <Content Remove="wwwroot\assets\images\kiss1.png" />
+    <Content Remove="wwwroot\assets\images\otherButton2.png" />
+    <Content Remove="wwwroot\assets\images\paper.jpg" />
     <Content Remove="wwwroot\assets\images\sick.png" />
     <Content Remove="wwwroot\assets\images\sick1.png" />
     <Content Remove="wwwroot\assets\images\skull.png" />
@@ -38,6 +41,7 @@
     <Content Remove="wwwroot\assets\images\surprised1.png" />
     <Content Remove="wwwroot\assets\images\Virus -19.png" />
     <Content Remove="wwwroot\assets\images\Virus -20.png" />
+    <Content Remove="wwwroot\assets\images\Virus_3.png" />
     <Content Remove="wwwroot\assets\images\WelcomePageImage.png" />
   </ItemGroup>
 
@@ -60,6 +64,7 @@
     <Resource Include="wwwroot\assets\images\arrow.png" />
     <Resource Include="wwwroot\assets\images\bigSmile.png" />
     <Resource Include="wwwroot\assets\images\bigSmile1.png" />
+    <Resource Include="wwwroot\assets\images\chronicButton.png" />
     <Resource Include="wwwroot\assets\images\clown1.png" />
     <Resource Include="wwwroot\assets\images\confused.png" />
     <Resource Include="wwwroot\assets\images\confused1.png" />
@@ -75,6 +80,8 @@
     <Resource Include="wwwroot\assets\images\happy2.png" />
     <Resource Include="wwwroot\assets\images\kiss.png" />
     <Resource Include="wwwroot\assets\images\kiss1.png" />
+    <Resource Include="wwwroot\assets\images\otherButton2.png" />
+    <Resource Include="wwwroot\assets\images\paper.jpg" />
     <Resource Include="wwwroot\assets\images\sick.png" />
     <Resource Include="wwwroot\assets\images\sick1.png" />
     <Resource Include="wwwroot\assets\images\skull.png" />
@@ -87,6 +94,7 @@
     <Resource Include="wwwroot\assets\images\surprised1.png" />
     <Resource Include="wwwroot\assets\images\Virus -19.png" />
     <Resource Include="wwwroot\assets\images\Virus -20.png" />
+    <Resource Include="wwwroot\assets\images\Virus_3.png" />
     <Resource Include="wwwroot\assets\images\WelcomePageImage.png" />
   </ItemGroup>
 

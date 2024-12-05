@@ -16,5 +16,6 @@ namespace SunLab2.DAL.Model
         public int DiseaseId { get; set; }
 
         public virtual Disease Disease { get; set; }
+        public virtual ICollection<DrugTime> DrugTimes { get; set; } = new List<DrugTime>();
     }
 }

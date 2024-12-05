@@ -3,7 +3,7 @@
 
     <div class="stepsContainer">
         <div class="stepsInfo">
-            <input type="number" class="steps" maxlength="6" value="508" onfocus="inputClick()">
+            <input type="number" class="steps" maxlength="6" value="0" onfocus="inputClick()">
             <p>шаги сегодня</p>
         </div>
 
@@ -30,7 +30,7 @@
 
     <div class="weightContainer">
         <div class="weightInfo">
-            <p class="weightText">65</p>
+            <p class="weightText">0</p>
             <p class="smallWeightText">кг вес сейчас</p>
         </div>
 
@@ -64,7 +64,7 @@
 
     <div class="heightContainer">
         <div class="heightInfo">
-            <p class="heightText">183</p>
+            <p class="heightText">0</p>
             <p class="smallHeightText">см рост сейчас</p>
         </div>
         <button class="heightMoreButton" onclick="HideHeightMoreInfo()">
@@ -103,7 +103,7 @@
 
     <div class="bedTimeContainer">
         <p>Время</p>
-        <input type="time" class="bedTimeInput" value="22:00">
+        <input type="time" class="bedTimeInput" value="22:00" onblur="sleepTimeLostFocus()">
         <p>Cпать</p>
     </div>
 

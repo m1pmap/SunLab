@@ -3,22 +3,32 @@
 
     <div class="healthButtons">
         <div class="upContainer">
-            <button class="viralDiseasesButton"></button>
+            <button class="viralDiseasesButton">
+                <img src="~/assets/images/Virus -21.png" width="300px" height="300px" alt="Virus Image"> 
+                 @* <p>Вирусные<br/>Болезни</p> *@
+            </button>
 
             <div class="rightContainer">
-                <button class="chronicDiseasesButton"></button>
+                <button class="chronicDiseasesButton">
+                    <img src="~/assets/images/chronicButton3.png" width="200px">
+                </button>
 
-                <button class="mentalDiseasesButton"></button>
+                <button class="mentalDiseasesButton">
+                    <img src="~/assets/images/mentalButton4.png" width="110px">
+                </button>
             </div>
         </div>
 
-        <button class="otherButton"></button>
+        <button class="otherButton">
+            @* <img src="~/assets/images/otherButton2.png" width="250px"> *@
+            @* <p>ДРУГОЕ</p> *@
+        </button>
     </div>
 
     <div class="diseases viralDiseases">
         <div class="ButtonsContainer virusButtonsContainer">
             <button class="backButton virusBackButton" onclick="showAllHealthButtons('virus')">Назад</button>
-            <button class="startVirusDiseaseButton" onclick="startDisease()">
+            <button class="startVirusDiseaseButton" onclick="startDisease('virus')">
                 <p>Начать</p>
             </button>
         </div>
@@ -28,8 +38,8 @@
                 <p>Введите название заболевания:</p>
                 <input class="diseasesWriterInput" type="text" onfocus="inputClick()"/>
                 <div class="diseasesWriterButtons">
-                    <button class="diseasesWriterAdd" onclick="WriterAdd()">Добавить</button>
-                    <button class="diseasesWriterNext" onclick="WriterNext()">Далее</button>
+                    <button class="diseasesWriterAdd" onclick="WriterAdd('virus')">Добавить</button>
+                    <button class="diseasesWriterNext" onclick="WriterNext('virus')">Далее</button>
                 </div>
             </div>
 
@@ -49,19 +59,21 @@
 
             <div class="therapiesContainer">
                 <p>Выберите ваши методы лечения</p>
-                <button class="therapy" onclick="addRemoveTherapy('Снятие симптомов', this)">Снятие симптомов</button>
-                <button class="therapy" onclick="addRemoveTherapy('Противовирусные', this)">Противовирусные</button>
-                <button class="therapy" onclick="addRemoveTherapy('Иммуностимуляцияа', this)">Иммуностимуляция</button>
-                <button class="therapy" onclick="addRemoveTherapy('Вакцинация', this)">Вакцинация</button>
-                <button class="therapy" onclick="addRemoveTherapy('Поддержка тела', this)">Поддержка тела</button>
+                <button class="therapy" onclick="addRemoveTherapy('Снятие симптомов', this, 'virus')">Снятие симптомов</button>
+                <button class="therapy" onclick="addRemoveTherapy('Противовирусные', this, 'virus')">Противовирусные</button>
+                <button class="therapy" onclick="addRemoveTherapy('Иммуностимуляция', this, 'virus')">Иммуностимуляция</button>
+                <button class="therapy" onclick="addRemoveTherapy('Вакцинация', this, 'virus')">Вакцинация</button>
+                <button class="therapy" onclick="addRemoveTherapy('Поддержка тела', this, 'virus')">Поддержка тела</button>
 
-                <button class="endButton" onclick="WriterNext()">Закончить</button>
+                <button class="endButton" onclick="WriterNext('virus')">Закончить</button>
             </div>
 
             <div class="drugsContainer">
                 @* <div class="symptom">Drug</div> *@
             </div>
         </div>
+
+        <button class="symptom papers">Статьи с советами</button>
 
         <div class="currentDisease">
             <div class="symptom virusDiseaseName">diseaseName</div>
@@ -78,7 +90,7 @@
                 </button>
             </div>
             <div class="slider">
-                <div class="slides" id="slidesContainer">
+                <div class="slides" id="virusSlidesContainer">
                     <div class="slide symptomsSlide">
                         @* <p>Symptoms:</p>
                         <div class="entity">symptom1</div>
@@ -97,30 +109,181 @@
                         <div class="entity">drug1</div>
                         <div class="entity new">New</div> *@
                     </div>
+
+                    <div class="slide analiseSlide">
+                         <p>Анализы:</p>
+                        <div id="myVirusAnaliseContainer">
+                            @*<div class="analiseWriter">
+                                <p>Введите параметр:</p>
+                                <div class="analiseWriterButtons">
+                                    <input class="diseasesWriterInput" type="text" onfocus="inputClick()" />
+                                    <button class="analiseWriterNext">ОК</button>
+                                </div>
+                            </div> *@
+                            <button class="entity new" onclick="showAnaliseTypes('virus')">Добавить</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
+        @* <div class="drugTimeContainer">
+            <p>Укажите время приёма лекарства:</p>
+            <div class="drugTimeInputContainer">
+                <div class="entity drugTime" id="drugTime">
+                    <input type="time" class="drugTimeInput" value="22:00">
+                </div>
+                <button class="entity remove">X</button>
+            </div>
+            <div class="drugTimeButtonsContainer">
+                <button class="entity add">Дополнить</button>
+                <button class="entity ok">ОК</button>
+            </div>
+        </div> *@
+
         @* <div class="symptom">Symptom</div> *@
 
+        @* <div class="symptomStatisticContainer">
+            <canvas id="symtomChart"></canvas>
+        </div> *@
+
+        @* <p style="margin-top: 20px">Статьи по вирусным заболеваниям</p>
+        <button class="paper">
+            <img src="~/assets/images/paper.jpg" height="250px">
+            <p>Как составить<br/>Чек-лист к доктору</p>
+            </button> *@           
         
     </div>
 
     <div class="diseases chronicDiseases">
         <div class="ButtonsContainer chronicButtonsContainer">
             <button class="backButton chronicBackButton" onclick="showAllHealthButtons('chronic')">Назад</button>
-            <button class="addChronicDiseaseButton">
+            <button class="addChronicDiseaseButton" onclick="startDisease('chronic')">
                 <p>Начать</p>
             </button>
         </div>
+
+        <div class="diseasesWriterContainer" id="chronicDiseasesWriterContainer">
+            <div class="diseasesWriter" id="chronicDiseasesWriter">
+                <p>Введите название заболевания:</p>
+                <input class="diseasesWriterInput" id="chronicDiseasesWriterInput" type="text" onfocus="inputClick()" />
+                <div class="diseasesWriterButtons" id="chronicDiseasesWriterButtons">
+                    <button class="diseasesWriterAdd" id="chronicDiseasesWriterAdd" onclick="WriterAdd('chronic')">Добавить</button>
+                    <button class="diseasesWriterNext" id="chronicDiseasesWriterNext" onclick="WriterNext('chronic')">Далее</button>
+                </div>
+            </div>
+
+            <div class="symptomsContainer" id="chronicSymptomsContainer">
+            </div>
+
+            <div class="symptomsSeverityContainer" id="chronicSymptomsSeverityContainer">
+                <p>Выберите тяжесть каждого симптома</p>
+            </div>
+
+            <div class="therapiesContainer" id="chronicTherapiesContainer">
+                <p>Выберите ваши методы лечения</p>
+                <button class="therapy" onclick="addRemoveTherapy('Фармакология', this, 'chronic')">Фармакология</button>
+                <button class="therapy" onclick="addRemoveTherapy('Операции', this, 'chronic')">Операции</button>
+                <button class="therapy" onclick="addRemoveTherapy('Физиотерапии', this, 'chronic')">Физиотерапии</button>
+                <button class="therapy" onclick="addRemoveTherapy('Технологии', this, 'chronic')">Технологии</button>
+
+                <button class="endButton" id="chronicEndButton" onclick="WriterNext('chronic')">Закончить</button>
+            </div>
+
+            <div class="drugsContainer" id="chronicDrugsContainer">
+                @* <div class="symptom">Drug</div> *@
+            </div>
+        </div>
+
+        <button class="symptom" id="myChronicDiseases" onclick="showMyDiseases('chronic')">Мои болезни</button>
+        <div id="myChronicDiseasesContainer"></div>
+
+        <div class="currentDisease" id="currentChronicDisease">
+            <div class="symptom chronicDiseaseName">diseaseName</div>
+            <div class="button-container">
+                <button class="Arrow left" id="chronicPrevBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" />
+                    </svg>
+                </button>
+                <button class="Arrow right" id="chronicNextBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2" />
+                    </svg>
+                </button>
+            </div>
+            <div class="slider">
+                <div class="slides" id="chronicSlidesContainer">
+                    <div class="slide chronicSymptomsSlide">
+                        @* <p>Symptoms:</p>
+                        <div class="entity">symptom1</div>
+                        <div class="entity new">New</div> *@
+                    </div>
+
+                    <div class="slide chronicTherapiesSlide">
+                        @* <p>Therapies:</p>
+                        <div class="entity">therapy1</div>
+                        <div class="entity">therapy2</div>
+                        <div class="entity new">New</div> *@
+                    </div>
+
+                    <div class="slide chronicDrugsSlide">
+                        @* <p>Drugs:</p>
+                        <div class="entity">drug1</div>
+                        <div class="entity new">New</div> *@
+                    </div>
+
+                    <div class="slide analiseSlide">
+                        <p>Анализы:</p>
+                        <div id="myChronicAnaliseContainer">
+
+                            <button class="entity new" onclick="showAnaliseTypes('chronic')">Добавить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="diseases mentalDiseases">
         <div class="ButtonsContainer mentalButtonsContainer">
             <button class="backButton mentalBackButton" onclick="showAllHealthButtons('mental')">Назад</button>
-            <button class="addMentalDiseaseButton">
+            <button class="addMentalDiseaseButton" onclick="startDisease('mental')">
                 <p>Начать</p>
             </button>
+        </div>
+
+        <div class="diseasesWriterContainer" id="mentalDiseasesWriterContainer">
+            <div class="diseasesWriter" id="mentalDiseasesWriter">
+                <p>Введите название заболевания:</p>
+                <input class="diseasesWriterInput" id="mentalDiseasesWriterInput" type="text" onfocus="inputClick()" />
+                <div class="diseasesWriterButtons" id="mentalDiseasesWriterButtons">
+                    <button class="diseasesWriterAdd" id="mentalDiseasesWriterAdd" onclick="WriterAdd('mental')">Добавить</button>
+                    <button class="diseasesWriterNext" id="mentalDiseasesWriterNext" onclick="WriterNext('mental')">Далее</button>
+                </div>
+            </div>
+
+            <div class="symptomsContainer" id="mentalSymptomsContainer">
+            </div>
+
+            <div class="symptomsSeverityContainer" id="mentalSymptomsSeverityContainer">
+                <p>Выберите тяжесть каждого симптома</p>
+            </div>
+
+            <div class="therapiesContainer" id="mentalTherapiesContainer">
+                <p>Выберите ваши методы лечения</p>
+                <button class="therapy" onclick="addRemoveTherapy('Фармакология', this, 'mental')">Фармакология</button>
+                <button class="therapy" onclick="addRemoveTherapy('Операции', this, 'mental')">Операции</button>
+                <button class="therapy" onclick="addRemoveTherapy('Физиотерапии', this, 'mental')">Физиотерапии</button>
+                <button class="therapy" onclick="addRemoveTherapy('Технологии', this, 'mental')">Технологии</button>
+
+                <button class="endButton" id="mentalEndButton" onclick="WriterNext('mental')">Закончить</button>
+            </div>
+
+            <div class="drugsContainer" id="mentalDrugsContainer">
+                @* <div class="symptom">Drug</div> *@
+            </div>
         </div>
 
         <div class="CalmContainer">
@@ -130,10 +293,53 @@
         </div>
         <p class="calmingInstructor">Расслабьтесь и устройтесь поудобнее</p>
 
+        <button class="symptom" id="myMentalDiseases" onclick="showMyDiseases('mental')">Мои болезни</button>
+        <div id="myMentalDiseasesContainer"></div>
 
-        <button class="diseasesHistoryButton">
-            <p>История моих болезней</p>
-        </button>
+        <div class="currentDisease" id="currentMentalDisease">
+            <div class="symptom mentalDiseaseName">diseaseName</div>
+            <div class="button-container">
+                <button class="Arrow left" id="mentalPrevBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" />
+                    </svg>
+                </button>
+                <button class="Arrow right" id="mentalNextBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2" />
+                    </svg>
+                </button>
+            </div>
+            <div class="slider">
+                <div class="slides" id="mentalSlidesContainer">
+                    <div class="slide mentalSymptomsSlide">
+                        @* <p>Symptoms:</p>
+                        <div class="entity">symptom1</div>
+                        <div class="entity new">New</div> *@
+                    </div>
+
+                    <div class="slide mentalTherapiesSlide">
+                        @* <p>Therapies:</p>
+                        <div class="entity">therapy1</div>
+                        <div class="entity">therapy2</div>
+                        <div class="entity new">New</div> *@
+                    </div>
+
+                    <div class="slide mentalDrugsSlide">
+                        @* <p>Drugs:</p>
+                        <div class="entity">drug1</div>
+                        <div class="entity new">New</div> *@
+                    </div>
+
+                    <div class="slide analiseSlide">
+                        <p>Анализы:</p>
+                        <div id="myMentalAnaliseContainer">
+                            <button class="entity new" onclick="showAnaliseTypes('mental')">Добавить</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <button class="moodTrackerButton" onclick="showMoods()">
             <p>Настроение сегодня</p>

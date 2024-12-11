@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using SunLab2.DAL.Repository;
 using Microsoft.Extensions.Options;
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Globalization;
 
 namespace SunLab2.Controllers
 {
@@ -28,8 +30,29 @@ namespace SunLab2.Controllers
         private readonly IStep _stepRepository;
         private readonly IWeight _weightRepository;
         private readonly IHeight _heightRepository;
+        private readonly IProduct _productRepository;
+        private readonly IFoodNote _foodNoteRepository;
+        private readonly IMeal _mealRepository;
+        private readonly IMealProduct _mealProductRepository;
 
-        public MainController(ILogger<MainController> logger, IUser userRepository, IDisease DiseaseRepository, ISymptom SymptomRepository, ITherapy TherapyRepository, IDrug DrugRepository, IDrugTime DrugTimeRepository, ISymptomSeverity SymptomSeverityRepository, IMentalEmotion mentalEmotionRepository, IBloodAnalise BloodAnaliseRepository, IUrineAnalise UrineAnaliseRepository, IStep StepRepository, IWeight WeightRepository, IHeight HeightRepository)
+        public MainController(ILogger<MainController> logger, 
+            IUser userRepository,
+            IDisease DiseaseRepository,
+            ISymptom SymptomRepository,
+            ITherapy TherapyRepository,
+            IDrug DrugRepository,
+            IDrugTime DrugTimeRepository,
+            ISymptomSeverity SymptomSeverityRepository,
+            IMentalEmotion mentalEmotionRepository,
+            IBloodAnalise BloodAnaliseRepository,
+            IUrineAnalise UrineAnaliseRepository,
+            IStep StepRepository,
+            IWeight WeightRepository,
+            IHeight HeightRepository,
+            IProduct ProductRepository,
+            IFoodNote FoodNoteRepository,
+            IMeal MealRepository,
+            IMealProduct MealProductRepository)
         {
             _logger = logger;
             _userRepository = userRepository;
@@ -45,6 +68,11 @@ namespace SunLab2.Controllers
             _stepRepository = StepRepository;
             _weightRepository = WeightRepository;
             _heightRepository = HeightRepository;
+            _heightRepository = HeightRepository;
+            _productRepository = ProductRepository;
+            _foodNoteRepository = FoodNoteRepository;
+            _mealRepository = MealRepository;
+            _mealProductRepository = MealProductRepository;
         }
 
         public IActionResult Index()
@@ -53,10 +81,10 @@ namespace SunLab2.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddUser(string userName)
+        public IActionResult AddUser(string userName, string userChatId)
         {
             HttpContext.Session.SetString("UserName", userName);
-            var user = new User { UserName = userName }; // Создание нового пользователя
+            var user = new User { UserName = userName, ChatID = Convert.ToInt64(userChatId)}; // Создание нового пользователя
             User currentUser;
             if (_userRepository.UserExists(user))
             {
@@ -73,7 +101,7 @@ namespace SunLab2.Controllers
                     {
                         _stepRepository.Add_Step(new Step { Day = i, StepsNum = 0, UserID = user.UserID });
                     }
-                    return null;
+                    return Ok();
                 }
                 else
                 {
@@ -101,10 +129,13 @@ namespace SunLab2.Controllers
                 maxDisease = new Disease();
             }
 
+            List<Product> products = _productRepository.GetAllProducts();
+
             // Возвращаем данные в формате JSON
             return Json(new
             {
                 userSleepTime = returnedUser.sleepTime,
+                userSupportingWeight = returnedUser.supportingWeight,
                 virusDisease = new
                 {
                     diseaseName = maxDisease.DiseaseName,
@@ -213,8 +244,38 @@ namespace SunLab2.Controllers
                 {
                     height = h.HeightValue,
                     data = h.Data
-                })
-            }) ;
+                }),
+                productTypes = products.GroupBy(p => p.ProductType)
+                .Select(g => new
+                {
+                    productType = g.Key, // Название типа продукта (группы)
+                    products = g.Select(p => new
+                    {
+                        productName = p.ProductName,
+                        protein = p.Protein,
+                        fats = p.Fats,
+                        carbs = p.Carbs,
+                        calories = p.Calories,
+                    })
+                }),
+                foodNotes = returnedUser.FoodNotes.Select(fn => new
+                {
+                    date = fn.Date,
+                    meals = fn.Meals.Select(m => new
+                    {
+                        mealName = m.MealName,
+                        products = m.MealProducts.Select(mp => new
+                        {
+                            productName = mp.Product.ProductName,
+                            protein = mp.Product.Protein,
+                            fats = mp.Product.Fats,
+                            carbs = mp.Product.Carbs,
+                            calories = mp.Product.Calories,
+                            gramms = mp.Gramms
+                        })
+                    })
+                }),
+            });
         }
 
         [HttpPost]
@@ -567,5 +628,55 @@ namespace SunLab2.Controllers
                 _heightRepository.Update_Height(findHeight.HeightId, Convert.ToInt32(updateHeight));
             }
         }
+
+        [HttpPost]
+        public void USupportingWeight(string newSupportingWeight)
+        {
+            string username = HttpContext.Session.GetString("UserName");
+            User currentUser = _userRepository.GetUserByUsername(username);
+            _userRepository.UpdateUserSupportingWeight(currentUser.UserID, float.Parse(newSupportingWeight, CultureInfo.InvariantCulture));
+        }
+
+        [HttpPost]
+        public void CFoodNote()
+        {
+            string username = HttpContext.Session.GetString("UserName");
+            User currentUser = _userRepository.GetUserByUsername(username);
+            FoodNote foodNote = new FoodNote { Date = DateTime.Now.ToString("dd.MM.yyyy"), UserID = currentUser.UserID };
+            _foodNoteRepository.Add_FoodNote(foodNote);
+        }
+
+        [HttpPost]
+        public void CMeal(string foodNoteDate, string mealName)
+        {
+            string username = HttpContext.Session.GetString("UserName");
+            User connectedUser = _userRepository.ConnectUserInformation(_userRepository.GetUserByUsername(username));
+
+            FoodNote currentFoodNote = connectedUser.FoodNotes.FirstOrDefault(fn => fn.Date == foodNoteDate);
+            Meal newMeal = new Meal { FoodNoteId = currentFoodNote.FoodNoteId, MealName = mealName};
+            _mealRepository.Add_Meal(newMeal);
+        }
+
+        [HttpPost]
+        public void CMealProduct(string foodNoteDate, string mealName, string mealProducts, string mealProductsGramms) 
+        {
+            string username = HttpContext.Session.GetString("UserName");
+            User connectedUser = _userRepository.ConnectUserInformation(_userRepository.GetUserByUsername(username));
+
+            FoodNote currentFoodNote = connectedUser.FoodNotes.FirstOrDefault(fn => fn.Date == foodNoteDate);
+            Meal currentMeal = currentFoodNote.Meals.FirstOrDefault(m => m.MealName ==  mealName);
+            _mealProductRepository.DeleteMealProductsByMealId(currentMeal.MealID);
+
+            List<string> mealProductsList = JsonSerializer.Deserialize<List<string>>(mealProducts);
+            List<string> mealProductsGrammsList = JsonSerializer.Deserialize<List<string>>(mealProductsGramms);
+
+            for (int i = 0; i < mealProductsList.Count; i++)
+            {
+                Product product = _productRepository.SearchProductByProductName(mealProductsList[i]);
+                MealProduct mealProduct = new MealProduct { MealID = currentMeal.MealID, ProductId = product.ProductId, Gramms = float.Parse(mealProductsGrammsList[i], CultureInfo.InvariantCulture) };
+                _mealProductRepository.Add_MealProduct(mealProduct);
+            }
+        }
+
     }
 }

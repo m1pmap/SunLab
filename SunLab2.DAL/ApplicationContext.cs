@@ -19,6 +19,10 @@ namespace SunLab2.DAL
         public DbSet<Step> Steps{ get; set; }
         public DbSet<Weight> Weights{ get; set; }
         public DbSet<Height> Heights{ get; set; }
+        public DbSet<Product> Products{ get; set; }
+        public DbSet<FoodNote> FoodNotes { get; set; }
+        public DbSet<Meal> Meals { get; set; }
+        public DbSet<MealProduct> MealProducts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -57,6 +61,17 @@ namespace SunLab2.DAL
                 .HasForeignKey(me => me.UserID) // Указываем внешний ключ
                 .OnDelete(DeleteBehavior.Cascade); //Каскадное удаление
 
+            modelBuilder.Entity<User>()
+                .HasMany(u => u.FoodNotes) // Один пользователь может иметь много записей питания
+                .WithOne(me => me.User) // Каждый заметка питания связана с одним пользователем
+                .HasForeignKey(me => me.UserID) // Указываем внешний ключ
+                .OnDelete(DeleteBehavior.Cascade); //Каскадное удаление
+
+            modelBuilder.Entity<FoodNote>()
+                .HasMany(v => v.Meals) // Одна запись питания может иметь много приёмов пищи
+                .WithOne(s => s.FoodNote) // Каждый приём пищи связан с одной записью питания
+                .HasForeignKey(s => s.FoodNoteId);
+
             modelBuilder.Entity<Disease>()
                 .HasMany(v => v.Symptoms) // Одна болезнь может иметь много симптомов
                 .WithOne(s => s.Disease) // Каждый симптом связан с одной болезнью
@@ -91,6 +106,19 @@ namespace SunLab2.DAL
                 .HasMany(v => v.SymptomSeverities) // Одно лекарство может иметь несколько времени приёма
                 .WithOne(s => s.Symptom) // Каждое время приёма связано с одним лекарством
                 .HasForeignKey(s => s.SymptomId);
+
+            modelBuilder.Entity<MealProduct>()
+                .HasKey(mp => new { mp.MealID, mp.ProductId }); // Композитный ключ
+
+            modelBuilder.Entity<MealProduct>()
+                .HasOne(mp => mp.Meal)
+                .WithMany(m => m.MealProducts)
+                .HasForeignKey(mp => mp.MealID);
+
+            modelBuilder.Entity<MealProduct>()
+                .HasOne(mp => mp.Product)
+                .WithMany(p => p.MealProducts)
+                .HasForeignKey(mp => mp.ProductId);
 
             base.OnModelCreating(modelBuilder);
         }

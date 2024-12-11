@@ -19,10 +19,9 @@
             </div>
         </div>
 
-        <button class="otherButton">
-            @* <img src="~/assets/images/otherButton2.png" width="250px"> *@
-            @* <p>ДРУГОЕ</p> *@
-        </button>
+        @* <button class="otherButton"> Другое
+             <img src="~/assets/images/otherButton2.png" width="250px">
+        </button> *@
     </div>
 
     <div class="diseases viralDiseases">
@@ -73,7 +72,7 @@
             </div>
         </div>
 
-        <button class="symptom papers">Статьи с советами</button>
+        <button class="symptom" id="virusPapers">Статьи с советами</button>
 
         <div class="currentDisease">
             <div class="symptom virusDiseaseName">diseaseName</div>
@@ -291,6 +290,77 @@
                 <p>Дыхание</p>
             </button>
         </div>
+
+        <button class="moodTrackerButton" onclick="showMoods()">
+            <p>Настроение сегодня</p>
+        </button>
+
+        <div class="MoodsContainer">
+            <div class="moodsRowContainer">
+                <div class="image-grid" id="dataGrid1">
+                    <button class="image-button" onclick="createMoodTracker('happy2')">
+                        <img src="/assets/images/happy2.png" alt="Happy 1">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('bigSmile1')">
+                        <img src="/assets/images/bigSmile1.png" alt="Big Smile">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('smile1')">
+                        <img src="/assets/images/smile1.png" alt="Smile">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('cool2')">
+                        <img src="/assets/images/cool2.png" alt="Cool 1">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('kiss1')">
+                        <img src="/assets/images/kiss1.png" alt="Kiss">
+                    </button>
+                </div>
+            </div>
+
+            <!-- Второй ряд с 4 элементами -->
+            <div class="moodsRowContainer">
+                <div class="image-grid" id="dataGrid2">
+                    <button class="image-button" onclick="createMoodTracker('sleepy1')">
+                        <img src="/assets/images/sleepy1.png" alt="Sleepy">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('surprised1')">
+                        <img src="/assets/images/surprised1.png" alt="Surprised">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('confused1')">
+                        <img src="/assets/images/confused1.png" alt="Confused">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('crying1')">
+                        <img src="/assets/images/crying1.png" alt="Crying">
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Третий ряд с 5 элементами -->
+            <div class="moodsRowContainer">
+                <div class="image-grid" id="dataGrid3">
+                    <button class="image-button" onclick="createMoodTracker('sick1')">
+                        <img src="/assets/images/sick1.png" alt="Sick">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('cursing1')">
+                        <img src="/assets/images/cursing1.png" alt="Cursing">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('devil1')">
+                        <img src="/assets/images/devil1.png" alt="Devil">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('clown1')">
+                        <img src="/assets/images/clown1.png" alt="Clown">
+                    </button>
+                    <button class="image-button" onclick="createMoodTracker('skull1')">
+                        <img src="/assets/images/skull1.png" alt="Skull">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="MoodTrackerContainer">
+            <div class="moodDataGrid"></div>
+        </div>
+
         <p class="calmingInstructor">Расслабьтесь и устройтесь поудобнее</p>
 
         <button class="symptom" id="myMentalDiseases" onclick="showMyDiseases('mental')">Мои болезни</button>
@@ -339,76 +409,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <button class="moodTrackerButton" onclick="showMoods()">
-            <p>Настроение сегодня</p>
-        </button>
-
-        <div class="MoodsContainer">
-            <div class="moodsRowContainer">
-                <div class="image-grid" id="dataGrid1">
-                    <button class="image-button" onclick="createMoodTracker('happy2')">
-                        <img src="/assets/images/happy2.png" alt="Happy 1">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('bigSmile1')">
-                        <img src="/assets/images/bigSmile1.png" alt="Big Smile">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('smile1')">
-                        <img src="/assets/images/smile1.png" alt="Smile">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('cool2')">
-                        <img src="/assets/images/cool2.png" alt="Cool 1">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('kiss1')">
-                        <img src="/assets/images/kiss1.png" alt="Kiss">
-                    </button>
-                </div>
-            </div>
-
-            <!-- Второй ряд с 4 элементами -->
-            <div class="moodsRowContainer">
-                <div class="image-grid" id="dataGrid2">
-                    <button class="image-button" onclick="createMoodTracker('sleepy1')">
-                        <img src="/assets/images/sleepy1.png" alt="Sleepy">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('surprised1')">
-                        <img src="/assets/images/surprised1.png" alt="Surprised">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('confused1')">
-                        <img src="/assets/images/confused1.png" alt="Confused">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('crying1')">
-                        <img src="/assets/images/crying1.png" alt="Crying">
-                    </button>
-                </div>
-            </div>
-            
-
-            <!-- Третий ряд с 5 элементами -->
-            <div class="moodsRowContainer">
-                <div class="image-grid" id="dataGrid3">
-                    <button class="image-button" onclick="createMoodTracker('sick1')">
-                        <img src="/assets/images/sick1.png" alt="Sick">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('cursing1')">
-                        <img src="/assets/images/cursing1.png" alt="Cursing">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('devil1')">
-                        <img src="/assets/images/devil1.png" alt="Devil">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('clown1')">
-                        <img src="/assets/images/clown1.png" alt="Clown">
-                    </button>
-                    <button class="image-button" onclick="createMoodTracker('skull1')">
-                        <img src="/assets/images/skull1.png" alt="Skull">
-                    </button>
-                </div>
-            </div>
-            </div>
-
-        <div class="MoodTrackerContainer">
-            <div class="moodDataGrid"></div>
         </div>
     </div>
 

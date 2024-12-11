@@ -17,5 +17,6 @@ namespace SunLab2.DAL.Interfaces
         Disease GetCurrentVirusDisease(User user);
         Disease GetDiseaseByName(User user, string diseaseName, string diseaseType);
         bool UpdateUserSleepTime(int userId, string newSleepTime);
+        bool UpdateUserSupportingWeight(int userId, float newSupportingWeight);
     }
 }

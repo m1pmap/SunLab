@@ -22,10 +22,12 @@
 </head>
 <body>
     @* <div id="message">фыфыфвы</div> *@
-    @await Html.PartialAsync("WelcomePage")
-    @await Html.PartialAsync("Navigation")
-    @await Html.PartialAsync("ActivityPage")
-    @await Html.PartialAsync("HealthPage")
+    @await Html.PartialAsync("_WelcomePage")
+    @await Html.PartialAsync("_Navigation")
+    @await Html.PartialAsync("_ActivityPage")
+    @await Html.PartialAsync("_HealthPage")
+    @await Html.PartialAsync("_HealthyFoodPage")
+    @await Html.PartialAsync("_AnaliticPage")
     @RenderBody()
 
     <div class="ggg">

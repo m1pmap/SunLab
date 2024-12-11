@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using SunLab2.DAL;
 using SunLab2.DAL.Interfaces;
 using SunLab2.DAL.Repository;
+using Telegram.Bot;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,8 +23,18 @@ builder.Services.AddScoped<IUrineAnalise, UrineAnalise_Repository >();
 builder.Services.AddScoped<IStep, Step_Repository>();
 builder.Services.AddScoped<IWeight, Weight_Repository>();
 builder.Services.AddScoped<IHeight, Height_Repository>();
+builder.Services.AddScoped<IProduct, Product_Repository>();
+builder.Services.AddScoped<IFoodNote, FoodNote_Repository>();
+builder.Services.AddScoped<IMeal, Meal_Repository>();
+builder.Services.AddScoped<IMealProduct, MealProduct_Repository>();
 
 builder.Services.AddDbContext<ApplicationContext>();
+
+builder.Services.AddSingleton<ITelegramBotClient>(provider =>
+{
+    return new TelegramBotClient("6434768119:AAHkMgo5yuxcOm4im9ccx1yDAieKkxY_Wco");
+});
+builder.Services.AddHostedService<SunLab2.Services.NotificationService>();
 
 // Настройка кэша для сессий
 builder.Services.AddDistributedMemoryCache(); // Добавляем кэш для хранения данных сессий

@@ -15,12 +15,15 @@ namespace SunLab2.DAL.Model
         [MaxLength(60)]
         public string UserName { get; set; }
         public string sleepTime { get; set; } = "0";
+        public float supportingWeight { get; set; } = 0;
+        public long ChatID { get; set; }
 
         public virtual ICollection<Disease> Diseases { get; set; } = new List<Disease>();
         public virtual ICollection<MentalEmotion> MentalEmotions { get; set; } = new List<MentalEmotion>();
         public virtual ICollection<Step> Steps { get; set; } = new List<Step>();
         public virtual ICollection<Weight> Weights { get; set; } = new List<Weight>();
         public virtual ICollection<Height> Heights { get; set; } = new List<Height>();
+        public virtual ICollection<FoodNote> FoodNotes { get; set; } = new List<FoodNote>();
 
     }
 }

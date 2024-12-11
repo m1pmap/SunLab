@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SunLab2.DAL;
 
@@ -10,9 +11,11 @@ using SunLab2.DAL;
 namespace SunLab2.DAL.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20241209215026_healthyFoodMigration7")]
+    partial class healthyFoodMigration7
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,50 +191,6 @@ namespace SunLab2.DAL.Migrations
                     b.ToTable("Heights");
                 });
 
-            modelBuilder.Entity("SunLab2.DAL.Model.Meal", b =>
-                {
-                    b.Property<int>("MealID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MealID"));
-
-                    b.Property<int>("FoodNoteId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MealName")
-                        .IsRequired()
-                        .HasMaxLength(60)
-                        .HasColumnType("nvarchar(60)");
-
-                    b.HasKey("MealID");
-
-                    b.HasIndex("FoodNoteId");
-
-                    b.ToTable("Meals");
-                });
-
-            modelBuilder.Entity("SunLab2.DAL.Model.MealProduct", b =>
-                {
-                    b.Property<int>("MealID")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<float>("Gramms")
-                        .HasColumnType("real");
-
-                    b.Property<int>("MealProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("MealID", "ProductId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("MealProducts");
-                });
-
             modelBuilder.Entity("SunLab2.DAL.Model.MentalEmotion", b =>
                 {
                     b.Property<int>("MentalEmotionID")
@@ -273,6 +232,9 @@ namespace SunLab2.DAL.Migrations
                         .HasColumnType("real");
 
                     b.Property<float>("Fats")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Gramms")
                         .HasColumnType("real");
 
                     b.Property<string>("ProductName")
@@ -454,9 +416,6 @@ namespace SunLab2.DAL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
 
-                    b.Property<long>("ChatID")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasMaxLength(60)
@@ -566,36 +525,6 @@ namespace SunLab2.DAL.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("SunLab2.DAL.Model.Meal", b =>
-                {
-                    b.HasOne("SunLab2.DAL.Model.FoodNote", "FoodNote")
-                        .WithMany("Meals")
-                        .HasForeignKey("FoodNoteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("FoodNote");
-                });
-
-            modelBuilder.Entity("SunLab2.DAL.Model.MealProduct", b =>
-                {
-                    b.HasOne("SunLab2.DAL.Model.Meal", "Meal")
-                        .WithMany("MealProducts")
-                        .HasForeignKey("MealID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SunLab2.DAL.Model.Product", "Product")
-                        .WithMany("MealProducts")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Meal");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("SunLab2.DAL.Model.MentalEmotion", b =>
                 {
                     b.HasOne("SunLab2.DAL.Model.User", "User")
@@ -689,21 +618,6 @@ namespace SunLab2.DAL.Migrations
             modelBuilder.Entity("SunLab2.DAL.Model.Drug", b =>
                 {
                     b.Navigation("DrugTimes");
-                });
-
-            modelBuilder.Entity("SunLab2.DAL.Model.FoodNote", b =>
-                {
-                    b.Navigation("Meals");
-                });
-
-            modelBuilder.Entity("SunLab2.DAL.Model.Meal", b =>
-                {
-                    b.Navigation("MealProducts");
-                });
-
-            modelBuilder.Entity("SunLab2.DAL.Model.Product", b =>
-                {
-                    b.Navigation("MealProducts");
                 });
 
             modelBuilder.Entity("SunLab2.DAL.Model.Symptom", b =>

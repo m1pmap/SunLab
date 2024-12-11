@@ -4,6 +4,7 @@
     text-align: center;
     color: rgba(115, 114, 114, 0.75);
     width: 100%;
+    min-height: 400px;
 }
 
 p{
@@ -104,12 +105,6 @@ button,
     overflow: hidden;
 }
 
-.otherButton img {
-    position: absolute;
-    object-fit: cover;
-    left: 0;
-}
-
 .mentalDiseasesButton {
     width: 100%;
     height: 75px;
@@ -125,7 +120,7 @@ button,
 
 .otherButton {
     width: 100%;
-    height: 75px;
+    height: 50px;
     background-color: rgba(100,134,83,0.75);
     margin-top: 10px;
     border-radius: 12px;
@@ -135,6 +130,8 @@ button,
     overflow: hidden;
     justify-content: center;
     align-items: center;
+    font-weight: bold;
+    font-size: 23px;
 }
 
 .otherButton img {
@@ -221,6 +218,10 @@ button,
 .moodTrackerButton {
     opacity: 1;
 }
+
+.moodTrackerButton {
+    transition: 0.5s ease;
+}
 .entity,
 .analiseWriter {
     margin-top: 10px;
@@ -263,8 +264,9 @@ button,
 }
 
 .diseasesWriterNext,
-.diseasesWriterAdd{
+.diseasesWriterAdd {
     opacity: 1;
+    animation: none;
 }
 .diseasesWriter {
     height: auto;
@@ -350,7 +352,7 @@ button p,
     margin-top: 10px;
     display: none;
     transition: 1s ease;
-    height: 260px;
+    height: 170px;
     padding: 0;
 }
 

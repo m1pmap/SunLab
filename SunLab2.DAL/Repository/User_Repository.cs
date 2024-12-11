@@ -76,6 +76,10 @@ namespace SunLab2.DAL.Repository
                             .ThenInclude(d => d.BloodAnalises)
                         .Include(u => u.Diseases)
                             .ThenInclude(d => d.UrineAnalises)
+                        .Include(u => u.FoodNotes)
+                            .ThenInclude(fn => fn.Meals)
+                                .ThenInclude(m => m.MealProducts)
+                                    .ThenInclude(mp => mp.Product)
                         .Include(u => u.MentalEmotions)
                         .Include(u => u.Steps)
                         .Include(u => u.Weights)
@@ -88,7 +92,7 @@ namespace SunLab2.DAL.Repository
             catch (Exception ex)
             {
                 var innerEx = ex.InnerException;
-                Debug.WriteLine(innerEx?.Message); // Используем оператор null-условного доступа
+                Debug.WriteLine(innerEx?.Message);
                 return null;
             }
         }
@@ -153,6 +157,32 @@ namespace SunLab2.DAL.Repository
             {
                 Debug.WriteLine(ex.Message);
                 Debug.WriteLine($"Error updating of a sleepTime on {newSleepTime}");
+                return false;
+            }
+        }
+
+        public bool UpdateUserSupportingWeight(int userId, float newSupportingWeight)
+        {
+            try
+            {
+                using (ApplicationContext db = new ApplicationContext())
+                {
+                    var updateUser = db.Users.FirstOrDefault(u => u.UserID == userId);
+
+                    if (updateUser != null)
+                    {
+                        updateUser.supportingWeight = newSupportingWeight;
+                        db.SaveChanges();
+                    }
+
+                    Debug.WriteLine($"Successful updating supportingWeight on {newSupportingWeight}");
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Debug.WriteLine($"Error updating supportingWeight on {newSupportingWeight}");
                 return false;
             }
         }

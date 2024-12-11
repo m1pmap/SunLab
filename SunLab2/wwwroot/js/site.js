@@ -43,8 +43,16 @@ class Disease {
         this.symptoms = symptoms;
         this.therapies = therapies;
         this.drugs = drugs; 
-        this.bloodAnalises = bloodAnalises;
-        this.urineAnalises = urineAnalises;
+        if (bloodAnalises == undefined) {
+            this.bloodAnalises = [];
+        } else {
+            this.bloodAnalises = bloodAnalises;
+        }
+        if (urineAnalises == undefined) {
+            this.urineAnalises = [];
+        } else {
+            this.urineAnalises = urineAnalises;
+        }
     }
 }
 
@@ -76,11 +84,45 @@ class Step {
     }
 }
 
+class Product {
+    constructor(productName, protein, fats, carbs, calories, gramms) {
+        this.productName = productName;
+        this.protein = protein;
+        this.fats = fats;
+        this.carbs = carbs;
+        this.calories = calories;
+        this.gramms = gramms;
+    }
+}
+
+class ProductType {
+    constructor(productType, products) {
+        this.productType = productType;
+        this.products = products;
+    }
+}
+
+class FoodNote {
+    constructor(date, meals) {
+        this.date = date;
+        this.meals = meals;
+    }
+}
+
+class Meal {
+    constructor(mealName, products) {
+        this.mealName = mealName;
+        this.products = products;
+    }
+}
+
 let virusDisease = new Disease("", [], [], []);
 let chronicDiseases = [];
 let mentalDiseases = [];
 let userWeights = [];
 let userHeights = [];
+let productTypes = [];
+let foodNotes = [new FoodNote("06.12.2024", [new Meal("Завтрак", [new Product("Курица", 31, 3.6, 0, 165, 120), new Product("Молоко", 3, 0.1, 4.5, 30, 50)]), new Meal("Обед", [new Product("Молоко", 3, 0.1, 4.5, 30, 50)])]), new FoodNote("07.12.2024", [new Meal("Завтрак", [new Product("Курица", 31, 3.6, 0, 165, 120)]), new Meal("Ужин", [new Product("Молоко", 3, 0.1, 4.5, 30, 50)])])];
 
 function getCurrentDate() {
     const today = new Date();
@@ -179,32 +221,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tg.expand();
 
-    tg.MainButton.show();
-    tg.MainButton.text = "mipmap";
-    tg.MainButton.onClick(() => {
-        if (isInputOpen) {
-            stepsInput.blur();
-            newWeightInput.blur();
-            newHeightInput.blur();
-            diseasesWriterInput.blur();
+    //tg.MainButton.show();
+    //tg.MainButton.text = "mipmap";
+    //tg.MainButton.onClick(() => {
+    //    if (isInputOpen) {
+    //        stepsInput.blur();
+    //        newWeightInput.blur();
+    //        newHeightInput.blur();
+    //        diseasesWriterInput.blur();
 
-            for (let i = 0; i < entityInputs.length; i++) {
-                entityInputs[i].blur();
-            }
+    //        for (let i = 0; i < entityInputs.length; i++) {
+    //            entityInputs[i].blur();
+    //        }
 
-            tg.MainButton.text = "mipmap";
-            isInputOpen = false;
-        }
-        else {
-            sendMessage(tg.initDataUnsafe.user.id, bedTimeInput.value);
-        }
-    });
+    //        tg.MainButton.text = "mipmap";
+    //        isInputOpen = false;
+    //    }
+    //    else {
+    //        sendMessage(tg.initDataUnsafe.user.id, bedTimeInput.value);
+    //    }
+    //});
+
+    //alert(tg.initDataUnsafe.user.id);
 
     tg.ready();
     userName = "m1pmap";//tg.initDataUnsafe.user.username;
+    userChatID = tg.initDataUnsafe.user.id;
 
     let formData = new FormData();
     formData.append("userName", userName); //wedl_666 k0tegg Saeredf
+    formData.append("userChatId", userChatID);
 
     fetch('/Main/AddUser', {
             method: 'POST',
@@ -218,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .then(data => {
         if (data.virusDisease.diseaseName != "") {
-            virusDisease = new Disease(data.virusDisease.diseaseName, data.virusDisease.symptoms, data.virusDisease.therapies, data.virusDisease.drugs, data.virusDisease.urineAnalises);
+            virusDisease = new Disease(data.virusDisease.diseaseName, data.virusDisease.symptoms, data.virusDisease.therapies, data.virusDisease.drugs, data.virusDisease.bloodAnalises, data.virusDisease.urineAnalises);
         }    
 
         data.chronicDiseases.forEach(cd => {
@@ -242,13 +288,46 @@ document.addEventListener('DOMContentLoaded', () => {
             userHeights.push(new Height(uh.height, uh.data));
         })
 
+        data.productTypes.forEach(pt => {
+            let products = [];
+            pt.products.forEach(p => {
+                products.push(new Product(p.productName, p.protein, p.fats, p.carbs, p.calories, p.gramms));
+            })
+            productTypes.push(new ProductType(pt.productType, products));
+        })
+
+        foodNotes.length = 0;
+        data.foodNotes.forEach(fn => {
+            let meals = [];
+            fn.meals.forEach(m => {
+                let products = [];
+
+                m.products.forEach(p => {
+                    products.push(new Product(p.productName, p.protein, p.fats, p.carbs, p.calories, p.gramms));
+                })
+
+                meals.push(new Meal(m.mealName, products));
+            })
+            foodNotes.push(new FoodNote(fn.date, meals));
+        })
+
+        calloryResultStep(data.userSupportingWeight);
+
+        uploadHealthyFoodNotes();
+        showAllProducts(false);
+
         uploadWeight();
         uploadHeight();
-
-
         
         uploadSleepTime(data.userSleepTime);
         uploadStepsActivity(data.userSteps);
+
+        adjustWidth(stepsInput, 5);
+        adjustWidth(newWeightInput, 3);
+        adjustWidth(newHeightInput, 3);
+
+        changeStepsAdvicies();
+        changeWHAdvicies();
 
         diseaseUpload("virus");
         diseaseUpload("chronic");
@@ -262,6 +341,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector('.addNewWeightButton').addEventListener('click', () => {
         document.querySelector('.addNewWeightButton').classList.add('active');
+    });
+
+    document.body.addEventListener('click', function (event) {
+        // Проверяем, что клик был не на элементе input и не на элементах с указанными классами
+        if (!event.target.matches('input') &&
+            !event.target.classList.contains('stepsInfo') &&
+            !event.target.classList.contains('newWeight') &&
+            !event.target.classList.contains('newHeight')) {
+
+            // Получаем все элементы input на странице
+            const inputs = document.querySelectorAll('input');
+
+            // Проходим по каждому элементу и вызываем blur()
+            inputs.forEach(input => {
+                input.blur();
+            });
+        }
     });
 
     document.querySelector('.bedTimeCheckBox').addEventListener('click', function () {
@@ -387,6 +483,11 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollToTarget(target);
     });
 
+    document.querySelector('.healthyFood').addEventListener('click', () => {
+        const target = document.querySelector('.HealthyFoodPageName');
+        scrollToTarget(target);
+    });
+
     document.querySelector('.stepsInfo').addEventListener('click', () => {
         focusItem(stepsInput);
     });
@@ -402,10 +503,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const viralDiseasesButton = document.querySelector('.viralDiseasesButton');
     const chronicDiseasesButton = document.querySelector('.chronicDiseasesButton');
     const mentalDiseasesButton = document.querySelector('.mentalDiseasesButton');
-    const otherButton = document.querySelector('.otherButton');
+    //const otherButton = document.querySelector('.otherButton');
 
     viralDiseasesButton.addEventListener('click', () => {
-        hideAllHealthButtons(viralDiseasesButton, chronicDiseasesButton, mentalDiseasesButton, otherButton);
+        hideAllHealthButtons(viralDiseasesButton, chronicDiseasesButton, mentalDiseasesButton/*, otherButton*/);
         changeHealthPageName("Вирусные заболевания");
         setTimeout(function () {
             openViralDiseasesPage();
@@ -415,7 +516,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     chronicDiseasesButton.addEventListener('click', () => {
-        hideAllHealthButtons(chronicDiseasesButton, viralDiseasesButton, mentalDiseasesButton, otherButton);
+        hideAllHealthButtons(chronicDiseasesButton, viralDiseasesButton, mentalDiseasesButton/*, otherButton*/);
         changeHealthPageName("Хронические болезни");
         setTimeout(function () {
             openChronicDiseasesPage();
@@ -423,29 +524,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     mentalDiseasesButton.addEventListener('click', () => {
-        hideAllHealthButtons(mentalDiseasesButton, chronicDiseasesButton, viralDiseasesButton, otherButton);
+        hideAllHealthButtons(mentalDiseasesButton, chronicDiseasesButton, viralDiseasesButton/*, otherButton*/);
         changeHealthPageName("Психологические болезни");
         setTimeout(function () {
             openMentalDiseasesPage();
         }, 750);
     });
 
-    otherButton.addEventListener('click', () => {
-        hideAllHealthButtons(otherButton, mentalDiseasesButton, viralDiseasesButton, chronicDiseasesButton);
-        changeHealthPageName("Другое");
+    //otherButton.addEventListener('click', () => {
+    //    hideAllHealthButtons(otherButton, mentalDiseasesButton, viralDiseasesButton, chronicDiseasesButton);
+    //    changeHealthPageName("Другое");
 
-        setTimeout(function () {
-            openOtherDiseasesPage();
-        }, 750);
-    });
-
-
-    adjustWidth(stepsInput, 5);
-    adjustWidth(newWeightInput, 3);
-    adjustWidth(newHeightInput, 3);
-
-    changeStepsAdvicies();
-    changeWHAdvicies();
+    //    setTimeout(function () {
+    //        openOtherDiseasesPage();
+    //    }, 750);
+    //});
 
     let prevBtn = document.getElementById('prevBtn');
     let nextBtn = document.getElementById('nextBtn');
@@ -484,6 +577,19 @@ document.addEventListener('DOMContentLoaded', () => {
     prevBtn.addEventListener('click', () => {
         currentIndex--;
         updateSlidePosition("mental");
+    });
+
+    prevBtn = document.getElementById('healthyFoodPrevBtn');
+    nextBtn = document.getElementById('healthyFoodNextBtn');
+
+    nextBtn.addEventListener('click', () => {
+        currentIndex++;
+        updateSlidePosition("healthyFood");
+    });
+
+    prevBtn.addEventListener('click', () => {
+        currentIndex--;
+        updateSlidePosition("healthyFood");
     });
 });
 
@@ -533,6 +639,8 @@ function updateSlidePosition(diseaseType) {
         slidesContainer = document.getElementById('chronicSlidesContainer');
     } else if (diseaseType == "mental") {
         slidesContainer = document.getElementById('mentalSlidesContainer');
+    } else if (diseaseType == "healthyFood") {
+        slidesContainer = document.getElementById('healthyFoodSlidesContainer');
     }
     const totalSlides = slidesContainer.children.length; // Общее количество слайдов
     currentIndex = (currentIndex + totalSlides) % totalSlides; // Обеспечиваем цикличность
@@ -1006,9 +1114,9 @@ function hideAllHealthButtons(button1, button2, button3, button4) {
         button3.style.opacity = "0";
     }, 200);
 
-    setTimeout(function () {
-        button4.style.opacity = "0";
-    }, 300);
+    //setTimeout(function () {
+    //    button4.style.opacity = "0";
+    //}, 300);
 
     setTimeout(function () {
         healthButtons.style.display = "none";
@@ -1020,7 +1128,7 @@ function showAllHealthButtons(diseaseType) {
     const viralDiseasesButton = document.querySelector('.viralDiseasesButton');
     const chronicDiseasesButton = document.querySelector('.chronicDiseasesButton');
     const mentalDiseasesButton = document.querySelector('.mentalDiseasesButton');
-    const otherButton = document.querySelector('.otherButton');
+    //const otherButton = document.querySelector('.otherButton');
     let delay = 550;
 
     if (diseaseType == "virus") {
@@ -1052,9 +1160,9 @@ function showAllHealthButtons(diseaseType) {
         mentalDiseasesButton.style.opacity = "1";
     }, delay + 300);
 
-    setTimeout(function () {
-        otherButton.style.opacity = "1";
-    }, delay + 400);
+    //setTimeout(function () {
+    //    otherButton.style.opacity = "1";
+    //}, delay + 400);
 }
 
 function changeHealthPageName(pageName) {
@@ -1478,7 +1586,7 @@ function createMoodTracker(smile) {
 }
 
 function showMoods() {
-    isMoodsTrackerOpened = false;
+    //isMoodsTrackerOpened = false;
     const moodTrackerButtonParagraph = document.querySelector('.moodTrackerButton').querySelector('p');
     const MoodsContainer = document.querySelector('.MoodsContainer');
     const moodDataGrid = document.querySelector('.moodDataGrid');
@@ -1619,7 +1727,7 @@ function WriterAdd(diseaseType) {
             const newDiv = document.createElement('div');
             newDiv.className = 'symptom';
             newDiv.textContent = diseasesWriterInput.value;
-            newDiv.setAttribute('b-3gxarn7yru', '');
+            newDiv.setAttribute('b-wxp5x0acnh', '');
 
             symptomsContainer.appendChild(newDiv);
 
@@ -1654,7 +1762,7 @@ function WriterAdd(diseaseType) {
             const newDiv = document.createElement('div');
             newDiv.className = 'symptom';
             newDiv.textContent = diseasesWriterInput.value;
-            newDiv.setAttribute('b-3gxarn7yru', '');
+            newDiv.setAttribute('b-wxp5x0acnh', '');
 
             drugsContainer.appendChild(newDiv);
 
@@ -1715,19 +1823,19 @@ function WriterNext(diseaseType) {
                 const symptomDiv = document.createElement('div');
                 symptomDiv.className = 'symptom';
                 symptomDiv.textContent = disease.symptoms[i].symptomName;
-                symptomDiv.setAttribute('b-3gxarn7yru', '');
+                symptomDiv.setAttribute('b-wxp5x0acnh', '');
 
                 // Создаем контейнер для типов тяжести
                 const severityTypesContainer = document.createElement('div');
                 severityTypesContainer.className = 'severityTypesContainer';
-                severityTypesContainer.setAttribute('b-3gxarn7yru', '');
+                severityTypesContainer.setAttribute('b-wxp5x0acnh', '');
 
                 // Создаем кнопки для тяжести
                 const severities = ['Easy', 'Mid', 'Hard'];
                 severities.forEach(severity => {
                     const button = document.createElement('button');
                     button.className = `severity ${severity}Severity`;
-                    button.setAttribute('b-3gxarn7yru', '');
+                    button.setAttribute('b-wxp5x0acnh', '');
                     if (severity == "Easy") {
                         button.textContent = "Легко";
                     } else if (severity == "Mid") {
@@ -1881,6 +1989,12 @@ function startDisease(diseaseType) {
     let diseasesWriterParagraph;
     let currentDisease;
     let myDiseasesButton;
+    let myDiseasesContainer;
+    let papers;
+    let calmingButton;
+    let moodTrackerButton;
+    let MoodsContainer;
+    let MoodTrackerContainer;
 
     if (diseaseType == "virus") {
         diseasesWriterContainer = document.querySelector('.diseasesWriterContainer');
@@ -1889,6 +2003,10 @@ function startDisease(diseaseType) {
         startVirusDiseaseButtonParagraph = document.querySelector('.startVirusDiseaseButton').querySelector('p');
         diseasesWriterParagraph = diseasesWriter.querySelector('p');
         currentDisease = document.querySelector('.currentDisease');
+
+        papers = document.getElementById('virusPapers');
+        papers.style.opacity = "0";
+
     } else if (diseaseType == 'chronic') {
         diseasesWriterContainer = document.getElementById('chronicDiseasesWriterContainer');
         diseasesWriter = document.getElementById('chronicDiseasesWriter');
@@ -1898,7 +2016,8 @@ function startDisease(diseaseType) {
         currentDisease = document.getElementById('currentChronicDisease');
 
         myDiseasesButton = document.getElementById('myChronicDiseases');
-        myDiseasesButton.style.opacity = "0";
+        myDiseasesContainer = document.getElementById('myChronicDiseasesContainer');
+        
 
     } else if (diseaseType == 'mental') {
         diseasesWriterContainer = document.getElementById('mentalDiseasesWriterContainer');
@@ -1908,12 +2027,43 @@ function startDisease(diseaseType) {
         diseasesWriterParagraph = diseasesWriter.querySelector('p');
         currentDisease = document.getElementById('currentMentalDisease');
         myDiseasesContainer = document.getElementById('myMentalDiseases');
+
+        myDiseasesButton = document.getElementById('myMentalDiseases');
+        myDiseasesContainer = document.getElementById('myMentalDiseasesContainer');
+
+        calmingButton = document.querySelector(".calmingButton");
+        calmingButton.style.opacity = "0";
+
+        moodTrackerButton = document.querySelector(".moodTrackerButton");
+        moodTrackerButton.style.opacity = "0";
+
+        MoodTrackerContainer = document.querySelector(".MoodTrackerContainer");
+        MoodsContainer = document.querySelector(".MoodsContainer");
+
+        if (isDailyMoodSelected) {
+            MoodTrackerContainer.style.display = "none";
+            MoodsContainer.style.display = "none";
+        } else {
+            MoodsContainer.style.display = "none";
+        }
     }
 
     if (isDiseaseStart == false) {
         isDiseaseStart = true;
         currentDisease.style.opacity = "0";
         startVirusDiseaseButtonParagraph.style.opacity = "0";
+
+        if (diseaseType == "chronic" || diseaseType == "mental") {
+            myDiseasesButton.style.opacity = "0";
+            myDiseasesContainer.innerHTML = "";
+            myDiseasesContainer.style.marginBottom = "0px";
+            isMyChronicDiseasesOpen = false;
+        }
+
+        let time = 0;
+        if (diseaseType == "mental") {
+            time = 300;
+        }
 
         setTimeout(() => {
             currentDisease.style.display = "none";
@@ -1926,12 +2076,14 @@ function startDisease(diseaseType) {
             startVirusDiseaseButtonParagraph.textContent = "Закончить";
             startVirusDiseaseButtonParagraph.style.opacity = "1";
 
+            
             setTimeout(() => {
                 diseasesWriter.style.opacity = "1";
             }, 50);
-        }, 550);
+        }, time + 550);
 
         diseaseRestart(diseaseType);
+
     }
     else {
         isDiseaseStart = false;
@@ -1951,10 +2103,21 @@ function startDisease(diseaseType) {
                 currentDisease.style.opacity = "1";
                 if (diseaseType == "chronic") {
                     myDiseasesButton.style.opacity = "1";
+                } else if (diseaseType == "virus") {
+                    papers.style.opacity = "1";
+                } else if (diseaseType == "mental") {
+                    myDiseasesButton.style.opacity = "1";
+                    calmingButton.style.opacity = "1";
+                    moodTrackerButton.style.opacity = "1";
+                    if (isDailyMoodSelected) {
+                        MoodTrackerContainer.style.display = "block";
+                        createMoodTracker();
+                    } else {
+                        showMoods();
+                    }
                 }
             }, 50);
         }, 500);
-
     }
 }
 
@@ -2018,6 +2181,8 @@ function diseaseRestart(diseaseType) {
         virusDisease.symptoms.length = 0;
         virusDisease.therapies.length = 0;
         virusDisease.drugs.length = 0;
+        virusDisease.bloodAnalises.length = 0;
+        virusDisease.urineAnalises.length = 0;
 
         endButton = document.querySelector('.endButton');
         symptomsContainer = document.querySelector(".symptomsContainer");
@@ -2064,6 +2229,11 @@ function diseaseUpload(diseaseType) {
         currentDisease = document.querySelector('.currentDisease');
         disease = virusDisease;
 
+        let paperButton = document.getElementById('virusPapers');
+        setTimeout(() => {
+            paperButton.style.opacity = "1";
+        }, 700);
+
     } else if (diseaseType == "chronic") {
         virusDiseaseName = document.querySelector('.chronicDiseaseName');
         symptomsSlide = document.querySelector('.chronicSymptomsSlide');
@@ -2072,12 +2242,11 @@ function diseaseUpload(diseaseType) {
         currentDisease = document.getElementById('currentChronicDisease');
         disease = chronicDiseases[chronicDiseases.length - 1];
 
-        let myDiseasesContainer = document.getElementById('myChronicDiseases');
-        myDiseasesContainer.style.display = "block";
+        let myDiseasesButton = document.getElementById('myChronicDiseases');
 
         setTimeout(() => {
-            myDiseasesContainer.style.opacity = "1";
-        }, 50);
+            myDiseasesButton.style.opacity = "1";
+        }, 700);
     } else if (diseaseType == "mental") {
         virusDiseaseName = document.querySelector('.mentalDiseaseName');
         symptomsSlide = document.querySelector('.mentalSymptomsSlide');
@@ -2085,6 +2254,24 @@ function diseaseUpload(diseaseType) {
         drugsSlide = document.querySelector('.mentalDrugsSlide');
         currentDisease = document.getElementById('currentMentalDisease');
         disease = mentalDiseases[mentalDiseases.length - 1];
+
+        let myDiseasesButton = document.getElementById('myMentalDiseases');
+        let calmingButton = document.querySelector('.calmingButton');
+        let moodTrackerButton = document.querySelector('.moodTrackerButton');
+        let MoodTrackerContainer = document.querySelector('.MoodTrackerContainer');
+
+        setTimeout(() => {
+            myDiseasesButton.style.opacity = "1";
+            calmingButton.style.opacity = "1";
+            moodTrackerButton.style.opacity = "1";
+            if (isDailyMoodSelected) {
+                MoodTrackerContainer.style.display = "block";
+                createMoodTracker();
+            } else {
+                showMoods();
+            }
+        }, 700);
+        
     }
 
     if (disease == undefined) {
@@ -2106,7 +2293,7 @@ function diseaseUpload(diseaseType) {
         const symptomDiv = document.createElement('div');
         symptomDiv.className = 'entity';
         symptomDiv.textContent = disease.symptoms[i].symptomName;
-        symptomDiv.setAttribute('b-3gxarn7yru', '');
+        symptomDiv.setAttribute('b-wxp5x0acnh', '');
         symptomDiv.style.cursor = "pointer";
 
         if (disease.symptoms[i].symptomSeverities[disease.symptoms[i].symptomSeverities.length - 1].severity == "Easy") {
@@ -2127,7 +2314,7 @@ function diseaseUpload(diseaseType) {
     const newSymptomButton = document.createElement('button');
     newSymptomButton.classList.add('entity');
     newSymptomButton.classList.add('new');
-    newSymptomButton.setAttribute('b-3gxarn7yru', '');
+    newSymptomButton.setAttribute('b-wxp5x0acnh', '');
     newSymptomButton.textContent = "Добавить";
 
     newSymptomButton.onclick = () => {
@@ -2146,7 +2333,7 @@ function diseaseUpload(diseaseType) {
         const therapyDiv = document.createElement('div');
         therapyDiv.className = 'entity';
         therapyDiv.textContent = disease.therapies[i];
-        therapyDiv.setAttribute('b-3gxarn7yru', '');
+        therapyDiv.setAttribute('b-wxp5x0acnh', '');
 
         // Добавляем элементы в контейнер
         therapiesSlide.appendChild(therapyDiv);
@@ -2155,7 +2342,7 @@ function diseaseUpload(diseaseType) {
     const newTherapyButton = document.createElement('button');
     newTherapyButton.classList.add('entity');
     newTherapyButton.classList.add('new');
-    newTherapyButton.setAttribute('b-3gxarn7yru', '');
+    newTherapyButton.setAttribute('b-wxp5x0acnh', '');
     newTherapyButton.textContent = "Добавить";
 
     newTherapyButton.onclick = () => {
@@ -2192,9 +2379,9 @@ function diseaseUpload(diseaseType) {
                 })
             }
         });
-        input.setAttribute('b-3gxarn7yru', '');
+        input.setAttribute('b-wxp5x0acnh', '');
 
-        newTherapy.setAttribute('b-3gxarn7yru', '');
+        newTherapy.setAttribute('b-wxp5x0acnh', '');
         const lastTherapy = therapiesSlide.lastElementChild;
         therapiesSlide.insertBefore(newTherapy, lastTherapy);
         newTherapy.appendChild(input);
@@ -2212,7 +2399,7 @@ function diseaseUpload(diseaseType) {
         const drugDiv = document.createElement('div');
         drugDiv.className = 'entity';
         drugDiv.textContent = disease.drugs[i].drugName;
-        drugDiv.setAttribute('b-3gxarn7yru', '');
+        drugDiv.setAttribute('b-wxp5x0acnh', '');
         drugDiv.style.cursor = "pointer";
 
         // Добавляем элементы в контейнер
@@ -2225,7 +2412,7 @@ function diseaseUpload(diseaseType) {
     const newDrugButton = document.createElement('button');
     newDrugButton.classList.add('entity');
     newDrugButton.classList.add('new');
-    newDrugButton.setAttribute('b-3gxarn7yru', '');
+    newDrugButton.setAttribute('b-wxp5x0acnh', '');
     newDrugButton.textContent = "Добавить";
 
     newDrugButton.onclick = () => {
@@ -2265,9 +2452,9 @@ function diseaseUpload(diseaseType) {
                 })
             }
         });
-        input.setAttribute('b-3gxarn7yru', '');
+        input.setAttribute('b-wxp5x0acnh', '');
 
-        newDrug.setAttribute('b-3gxarn7yru', '');
+        newDrug.setAttribute('b-wxp5x0acnh', '');
 
         const lastDrug = drugsSlide.lastElementChild;
         drugsSlide.insertBefore(newDrug, lastDrug);
@@ -2314,9 +2501,9 @@ function newSymptomButtonClick(diseaseType) {
     input.addEventListener('focus', function () {
         inputClick();
     });
-    input.setAttribute('b-3gxarn7yru', '');
+    input.setAttribute('b-wxp5x0acnh', '');
 
-    newSymptom.setAttribute('b-3gxarn7yru', '');
+    newSymptom.setAttribute('b-wxp5x0acnh', '');
     const indexToInsert = symptomsSlide.children.length - 1;
     const referenceElement = symptomsSlide.children[indexToInsert];
     symptomsSlide.insertBefore(newSymptom, referenceElement);
@@ -2330,13 +2517,13 @@ function newSymptomButtonClick(diseaseType) {
     //Контейнер для типов тяжести
     const severityTypesContainer = document.createElement('div');
     severityTypesContainer.className = 'severityTypesContainer';
-    severityTypesContainer.setAttribute('b-3gxarn7yru', '');
+    severityTypesContainer.setAttribute('b-wxp5x0acnh', '');
 
     const severities = ['Easy', 'Mid', 'Hard'];
     severities.forEach(severity => {
         const button = document.createElement('button');
         button.className = `severity ${severity}Severity`;
-        button.setAttribute('b-3gxarn7yru', '');
+        button.setAttribute('b-wxp5x0acnh', '');
         if (severity == "Easy") {
             button.textContent = "Легко";
         } else if (severity == "Mid") {
@@ -2436,7 +2623,7 @@ function symptomClick(newSymptom, diseaseType) {
 
     const container = document.createElement('div');
     container.className = 'container';
-    container.setAttribute('b-3gxarn7yru', '');
+    container.setAttribute('b-wxp5x0acnh', '');
     // Находим индекс элемента
     const index = Array.from(newSymptom.parentNode.children).indexOf(newSymptom) - 1;
 
@@ -2445,13 +2632,13 @@ function symptomClick(newSymptom, diseaseType) {
     currentSymptomName = newSymptom.textContent;
     const severityTypesContainer = document.createElement('div');
     severityTypesContainer.className = 'severityTypesContainer';
-    severityTypesContainer.setAttribute('b-3gxarn7yru', '');
+    severityTypesContainer.setAttribute('b-wxp5x0acnh', '');
 
     const severities = ['Easy', 'Mid', 'Hard'];
     severities.forEach(severity => {
         const button = document.createElement('button');
         button.className = `severity ${severity}Severity`;
-        button.setAttribute('b-3gxarn7yru', '');
+        button.setAttribute('b-wxp5x0acnh', '');
         if (severity == "Easy") {
             button.textContent = "Легко";
         } else if (severity == "Mid") {
@@ -2517,10 +2704,10 @@ function symptomClick(newSymptom, diseaseType) {
     //График
     const symptomStatisticContainer = document.createElement('div');
     symptomStatisticContainer.className = 'symptomStatisticContainer';
-    symptomStatisticContainer.setAttribute('b-3gxarn7yru', '');
+    symptomStatisticContainer.setAttribute('b-wxp5x0acnh', '');
     // Создаем элемент canvas
     const canvas = document.createElement('canvas');
-    canvas.setAttribute('b-3gxarn7yru', '');
+    canvas.setAttribute('b-wxp5x0acnh', '');
     canvas.id = 'symptomChart'; // Устанавливаем id для canvas
 
     // Добавляем canvas в контейнер
@@ -2604,7 +2791,7 @@ function drugTimeClicked(drugDiv, diseaseType) {
         drugTimeContainer.className = 'drugTimeContainer';
 
         const newParagraph = document.createElement('p');
-        newParagraph.setAttribute('b-3gxarn7yru', '');
+        newParagraph.setAttribute('b-wxp5x0acnh', '');
         newParagraph.textContent = 'Укажите время приёма лекарства:';
         newParagraph.style.margin = "0";
         newParagraph.style.marginBottom = "-10px";
@@ -2615,22 +2802,22 @@ function drugTimeClicked(drugDiv, diseaseType) {
         for (let i = 0; i < currentDrug.drugTimes.length; i++) {
             const drugTimeInputContainer = document.createElement('div');
             drugTimeInputContainer.className = 'drugTimeInputContainer';
-            drugTimeInputContainer.setAttribute('b-3gxarn7yru', '');
+            drugTimeInputContainer.setAttribute('b-wxp5x0acnh', '');
             drugTimeContainer.appendChild(drugTimeInputContainer);
 
             // Создаем элемент с input типа time
             const entityDiv = document.createElement('div');
-            entityDiv.setAttribute('b-3gxarn7yru', '');
+            entityDiv.setAttribute('b-wxp5x0acnh', '');
             entityDiv.className = 'entity drugTime';
 
             const input = document.createElement('input');
-            input.setAttribute('b-3gxarn7yru', '');
+            input.setAttribute('b-wxp5x0acnh', '');
             input.type = 'time';
             input.className = 'drugTimeInput';
             input.value = currentDrug.drugTimes[i];
 
             const removeButton = document.createElement('button');
-            removeButton.setAttribute('b-3gxarn7yru', '');
+            removeButton.setAttribute('b-wxp5x0acnh', '');
             removeButton.className = 'entity remove';
             removeButton.textContent = 'X';
 
@@ -2686,13 +2873,13 @@ function drugTimeClicked(drugDiv, diseaseType) {
 
         const drugTimeButtonsContainer = document.createElement('div');
         drugTimeButtonsContainer.className = 'drugTimeButtonsContainer';
-        drugTimeButtonsContainer.setAttribute('b-3gxarn7yru', '');
+        drugTimeButtonsContainer.setAttribute('b-wxp5x0acnh', '');
         drugTimeContainer.appendChild(drugTimeButtonsContainer);
 
 
         // Создаем кнопку "Дополнить"
         const addButton = document.createElement('button');
-        addButton.setAttribute('b-3gxarn7yru', '');
+        addButton.setAttribute('b-wxp5x0acnh', '');
         addButton.className = 'entity add';
         addButton.textContent = 'Дополнить';
 
@@ -2702,14 +2889,14 @@ function drugTimeClicked(drugDiv, diseaseType) {
             if (currentDrug.drugTimes.indexOf("05:08") == -1) {
                 const drugTimeInputContainer = document.createElement('div');
                 drugTimeInputContainer.className = 'drugTimeInputContainer';
-                drugTimeInputContainer.setAttribute('b-3gxarn7yru', '');
+                drugTimeInputContainer.setAttribute('b-wxp5x0acnh', '');
 
                 const newDrugTime = document.createElement('div');
-                newDrugTime.setAttribute('b-3gxarn7yru', '');
+                newDrugTime.setAttribute('b-wxp5x0acnh', '');
                 newDrugTime.className = 'entity drugTime';
 
                 const input = document.createElement('input');
-                input.setAttribute('b-3gxarn7yru', '');
+                input.setAttribute('b-wxp5x0acnh', '');
                 input.type = 'time';
                 input.className = 'drugTimeInput';
                 input.value = '05:08'; // Значение по умолчанию
@@ -2741,7 +2928,7 @@ function drugTimeClicked(drugDiv, diseaseType) {
                 newDrugTime.appendChild(input);
 
                 const removeButton = document.createElement('button');
-                removeButton.setAttribute('b-3gxarn7yru', '');
+                removeButton.setAttribute('b-wxp5x0acnh', '');
                 removeButton.className = 'entity remove';
                 removeButton.textContent = 'X';
 
@@ -2794,7 +2981,7 @@ function drugTimeClicked(drugDiv, diseaseType) {
 
         const saveButton = document.createElement('button');
         saveButton.className = 'entity ok'; // Добавляем классы
-        saveButton.setAttribute('b-3gxarn7yru', '');
+        saveButton.setAttribute('b-wxp5x0acnh', '');
         saveButton.textContent = 'ОК'; // Устанавливаем текст кнопки
 
         saveButton.addEventListener('click', function () {
@@ -2845,7 +3032,7 @@ function showMyDiseases(diseaseType) {
         const symptomDiv = document.createElement('div');
         symptomDiv.className = 'entity';
         symptomDiv.textContent = d.diseaseName;
-        symptomDiv.setAttribute('b-3gxarn7yru', '');
+        symptomDiv.setAttribute('b-wxp5x0acnh', '');
         symptomDiv.style.cursor = "pointer";
 
         symptomDiv.onclick = () => {
@@ -2896,7 +3083,7 @@ function showAnaliseTypes(diseaseType) {
     analiseTypes.forEach(at => {
         const analiseType = document.createElement('button');
         analiseType.classList.add('entity');
-        analiseType.setAttribute('b-3gxarn7yru', '');
+        analiseType.setAttribute('b-wxp5x0acnh', '');
         analiseType.textContent = at;
         analiseType.onclick = () => {
             if (at == "Анализ крови") {
@@ -2924,29 +3111,29 @@ function startUrineAnalise(myAnaliseContainer, diseaseType) {
 
 function createAnaliseWriter(paragraphText, myAnaliseContainer, analiseType, diseaseType) {
     const analiseWriterDiv = document.createElement('div');
-    analiseWriterDiv.setAttribute('b-3gxarn7yru', '');
+    analiseWriterDiv.setAttribute('b-wxp5x0acnh', '');
     analiseWriterDiv.className = 'analiseWriter';
 
     // Create the paragraph element
     const paragraph = document.createElement('p');
-    paragraph.setAttribute('b-3gxarn7yru', '');
+    paragraph.setAttribute('b-wxp5x0acnh', '');
     paragraph.textContent = paragraphText;
 
     // Create the buttons container div
     const buttonsDiv = document.createElement('div');
-    buttonsDiv.setAttribute('b-3gxarn7yru', '');
+    buttonsDiv.setAttribute('b-wxp5x0acnh', '');
     buttonsDiv.className = 'analiseWriterButtons';
 
     // Create the input element
     const input = document.createElement('input');
-    input.setAttribute('b-3gxarn7yru', '');
+    input.setAttribute('b-wxp5x0acnh', '');
     input.className = 'diseasesWriterInput';
     input.type = 'text';
     input.setAttribute('onfocus', 'inputClick()');
 
     // Create the button element
     const button = document.createElement('button');
-    button.setAttribute('b-3gxarn7yru', '');
+    button.setAttribute('b-wxp5x0acnh', '');
     button.className = 'analiseWriterNext';
     button.style.marginBottom = "10px";
     button.style.height = "40px";
@@ -3175,7 +3362,7 @@ function bloodAnaliseClick(analise, button) {
             selectedAnaliseDiv.style.background = "rgba(190,75,75,0.75)";
         }
         selectedAnaliseDiv.textContent = bloodAnaliseLabels[i] + analise.analiseParameters[i];
-        selectedAnaliseDiv.setAttribute('b-3gxarn7yru', '');
+        selectedAnaliseDiv.setAttribute('b-wxp5x0acnh', '');
         containerDiv.appendChild(selectedAnaliseDiv);
 
         selectedAnaliseDiv.addEventListener('click', () => {
@@ -3190,7 +3377,7 @@ function bloodAnaliseClick(analise, button) {
             const selectedAnaliseNorm = document.createElement('div');
             selectedAnaliseNorm.classList.add('entity');
             selectedAnaliseNorm.classList.add('analiseNorm');
-            selectedAnaliseNorm.setAttribute('b-3gxarn7yru', '');
+            selectedAnaliseNorm.setAttribute('b-wxp5x0acnh', '');
             selectedAnaliseNorm.style.marginLeft = "40px";
             selectedAnaliseNorm.textContent = "Норма: от " + bloodAnaliseNorm[i][0] + " до " + bloodAnaliseNorm[i][1];
             selectedAnaliseNorm.style.width = "calc(100% - 80px)";
@@ -3226,7 +3413,7 @@ function urineAnaliseClick(analise, button) {
             selectedAnaliseDiv.style.background = "rgba(190,75,75,0.75)";
         }
         selectedAnaliseDiv.textContent = urineAnaliseLabels[i] + analise.analiseParameters[i];
-        selectedAnaliseDiv.setAttribute('b-3gxarn7yru', '');
+        selectedAnaliseDiv.setAttribute('b-wxp5x0acnh', '');
         containerDiv.appendChild(selectedAnaliseDiv);
 
         selectedAnaliseDiv.addEventListener('click', () => {
@@ -3241,7 +3428,7 @@ function urineAnaliseClick(analise, button) {
             const selectedAnaliseNorm = document.createElement('div');
             selectedAnaliseNorm.classList.add('entity');
             selectedAnaliseNorm.classList.add('analiseNorm');
-            selectedAnaliseNorm.setAttribute('b-3gxarn7yru', '');
+            selectedAnaliseNorm.setAttribute('b-wxp5x0acnh', '');
             selectedAnaliseNorm.style.marginLeft = "40px";
             if (urineAnaliseNorm[i][0] == 0 && urineAnaliseNorm[i][1] == 0) {
                 selectedAnaliseNorm.textContent = "В норме отсутствует";
@@ -3279,7 +3466,7 @@ function uploadAnalises(diseaseType) {
         bloodAnalises.forEach(ba => {
             const bloodAnalise = document.createElement('button');
             bloodAnalise.classList.add('entity');
-            bloodAnalise.setAttribute('b-3gxarn7yru', '');
+            bloodAnalise.setAttribute('b-wxp5x0acnh', '');
             bloodAnalise.style.height = "auto";
             bloodAnalise.style.minHeight = "45px";
             bloodAnalise.textContent = "Анализ крови от " + ba.data;
@@ -3295,7 +3482,7 @@ function uploadAnalises(diseaseType) {
         urineAnalises.forEach(ua => {
             const urineAnalise = document.createElement('button');
             urineAnalise.classList.add('entity');
-            urineAnalise.setAttribute('b-3gxarn7yru', '');
+            urineAnalise.setAttribute('b-wxp5x0acnh', '');
             urineAnalise.style.height = "auto";
             urineAnalise.style.minHeight = "45px";
             urineAnalise.textContent = "Анализ мочи от " + ua.data;
@@ -3310,7 +3497,7 @@ function uploadAnalises(diseaseType) {
     const newAnaliseButton = document.createElement('button');
     newAnaliseButton.classList.add('entity');
     newAnaliseButton.classList.add('new');
-    newAnaliseButton.setAttribute('b-3gxarn7yru', '');
+    newAnaliseButton.setAttribute('b-wxp5x0acnh', '');
     newAnaliseButton.textContent = "Добавить";
     newAnaliseButton.onclick = () => {
         showAnaliseTypes(diseaseType);
@@ -3320,4 +3507,670 @@ function uploadAnalises(diseaseType) {
 
 function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+}
+
+function openFoodNotes() {
+    let foodNotesContainer = document.getElementById('foodNotesContainer');
+    let healthyFoodButtons = document.querySelectorAll('.healthyFoodTemplateButton');
+    healthyFoodButtons.forEach(bt => {
+        bt.style.display = "none";
+    })
+    foodNotesContainer.style.display = "block";
+}
+
+function foodNoteBackClick() {
+    let foodNotesContainer = document.getElementById('foodNotesContainer');
+    let foodNoteButton = document.getElementById('foodNotes');
+    let calloryButton = document.getElementById('callory');
+    let allProducts = document.getElementById('allProducts');
+
+    foodNotesContainer.style.display = "none";
+    foodNoteButton.style.display = "block";
+    calloryButton.style.display = "block";
+    allProducts.style.display = "block";
+}
+
+let currentMeal;
+let currentProduct;
+
+function uploadHealthyFoodNotes() {
+    let healthyFoodSlidesContainer = document.getElementById('healthyFoodSlidesContainer');
+
+    foodNotes.forEach(fn => {
+
+
+        let newSlide = document.createElement('div');
+        newSlide.setAttribute('b-iwbwbsraei', '');
+        newSlide.classList.add('slide');
+
+        let allCalory = 0;
+
+        fn.meals.forEach(m => {
+            m.products.forEach(p => {
+                allCalory += (p.calories * p.gramms / 100);
+            })
+        })
+
+        let allCaloryButton = document.createElement('button');
+        allCaloryButton.setAttribute('b-iwbwbsraei', '');
+        allCaloryButton.classList.add('healthyFoodEntityButton');
+        allCaloryButton.style.width = "calc(100% - 30px)";
+        allCaloryButton.textContent = "Калорийность: " + allCalory.toFixed(2);
+        newSlide.appendChild(allCaloryButton);
+
+        let newParagraph = document.createElement('p');
+        newParagraph.style.zIndex = "1";
+        newParagraph.textContent = fn.date;
+        newParagraph.setAttribute('b-iwbwbsraei', '');
+        newSlide.appendChild(newParagraph);
+        healthyFoodSlidesContainer.appendChild(newSlide);
+
+
+        fn.meals.forEach(m => {
+            let meal = document.createElement('button');
+            meal.setAttribute('b-iwbwbsraei', '');
+            meal.classList.add('healthyFoodEntityButton');
+            meal.textContent = m.mealName;
+            meal.onclick = () => {
+                mealClick(m, meal, fn.date);
+            }
+            newSlide.appendChild(meal);
+        })
+
+        let add = document.createElement('button');
+        add.setAttribute('b-iwbwbsraei', '');
+        add.classList.add('healthyFoodEntityButton');
+        add.style.width = "calc(100% - 120px)";
+        add.onclick = () => {
+            addMealButtonClick(newSlide, add, fn);
+        }
+        add.textContent = "Добавить приём";
+
+        newSlide.appendChild(add);
+    })
+}
+
+function mealClick(meal, mealButton, foodNoteDate) {
+    if (mealButton.textContent == "") {
+        return;
+    }
+
+    let element = document.querySelector('.productsContainer');
+    if (element != undefined) {
+        element.remove();
+        if (currentMeal == meal) {
+            return;
+        }
+    }
+
+    currentMeal = meal;
+    let container = document.createElement('div');
+    container.classList.add('productsContainer');
+    insertAfter(container, mealButton);
+
+    if (Array.isArray(meal.products)) {
+        meal.products.forEach(p => {
+            let product = document.createElement('button');
+            product.setAttribute('b-iwbwbsraei', '');
+            product.classList.add('healthyFoodEntityButton');
+            product.style.width = "calc(100% - 80px)";
+            product.style.backgroundColor = "rgba(96, 96, 96, 0.35)";
+            product.textContent = p.productName;
+
+            product.onclick = () => {
+                let element = document.querySelector('.pfccContainer');
+                if (element != undefined) {
+                    element.remove();
+                    if (currentProduct == p) {
+                        return;
+                    }
+                }
+
+                currentProduct = p;
+
+                let caloryContainer = document.createElement('div');
+                caloryContainer.classList.add('pfccContainer');
+                insertAfter(caloryContainer, product);
+
+                let productCalory = p.gramms * p.calories / 100;
+                let calory = document.createElement('button');
+                calory.setAttribute('b-iwbwbsraei', '');
+                calory.classList.add('healthyFoodEntityButton');
+                calory.style.width = "calc(100% - 100px)";
+                calory.style.backgroundColor = "rgba(96, 96, 96, 0.35)";
+                calory.textContent = "Калорийность на " + p.gramms + "г. - " + productCalory + "ккал.";
+                caloryContainer.appendChild(calory);
+            }
+            container.appendChild(product);
+        })
+    }
+
+    let add = document.createElement('button');
+    add.setAttribute('b-iwbwbsraei', '');
+    add.classList.add('healthyFoodEntityButton');
+    add.style.width = "calc(100% - 140px)";
+    add.style.backgroundColor = "rgba(96, 96, 96, 0.35)";
+    add.textContent = "Редактировать";
+    add.onclick = () => {
+        startAddingNewProduct(meal, foodNoteDate);
+    }
+
+    container.appendChild(add);
+}
+
+function addMealButtonClick(slide, addButton, foodNote) {
+    let meal = new Meal("", []);
+
+    const newMeal = document.createElement('button');
+    newMeal.classList.add('healthyFoodEntityButton');
+
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = 'Новый приём';
+    input.classList.add('entityInput');
+    input.addEventListener('focus', function () {
+        inputClick()
+    });
+    input.addEventListener('blur', function () {
+        mealName = input.value;
+        if (mealName != "") {
+            if (foodNote.meals.some(m => m.mealName == mealName)) {
+                alert("Приём пищи с таким именем уже существует.")
+                return;
+            }
+            input.remove();
+            newMeal.textContent = mealName;
+            meal.mealName = mealName;
+            foodNote.meals.push(meal);
+
+            let newMealFormData = new FormData();
+            newMealFormData.append("foodNoteDate", foodNote.date);
+            newMealFormData.append("mealName", mealName);
+
+            //Отправка данных на сервер
+            fetch('/Main/CMeal', {
+                method: 'POST',
+                body: newMealFormData
+            })
+        }
+    });
+    input.setAttribute('b-iwbwbsraei', '');
+
+    newMeal.setAttribute('b-iwbwbsraei', '');
+    newMeal.onclick = () => {
+        mealClick(meal, newMeal, foodNote.date);
+    }
+    slide.insertBefore(newMeal, addButton);
+    newMeal.appendChild(input);
+}
+
+function startAddingNewProduct(meal, foodNoteDate) {
+    let foodNoteSlider = document.getElementById('foodNoteSlider');
+    let healthyFoodSlidesContainer = document.getElementById('healthyFoodSlidesContainer');
+    foodNoteSlider.style.display = "none";
+    healthyFoodSlidesContainer.innerHTML = "";
+
+    showAllProducts(true, meal, foodNoteDate);
+}
+
+let currentProductType_All;
+let currentProduct_All;
+
+function showAllProducts(isAdding, meal, foodNoteDate) {
+    let container;
+
+    if (isAdding) {
+        container = document.getElementById('foodNotesContainer');
+    } else {
+        container = document.getElementById('productsContainer');
+    }
+
+    let productTypesContainer = document.createElement('div');
+    container.appendChild(productTypesContainer);
+
+    let paragraph = document.createElement('p');
+    if (isAdding) {
+        paragraph.textContent = "Выберите используемые продукты";
+    }
+    else {
+        paragraph.textContent = "Список всех продуктов";
+    }
+    productTypesContainer.appendChild(paragraph);
+
+    productTypes.forEach(pt => {
+        let productType = document.createElement('button');
+        productType.setAttribute('b-iwbwbsraei', '');
+        productType.style.width = "calc(100% - 50px)";
+        productType.textContent = pt.productType;
+
+        productType.onclick = () => {
+            let element = document.querySelector('.productsContainer_All');
+            if (element != undefined) {
+                element.remove();
+                if (currentProductType_All == pt) {
+                    return;
+                }
+            }
+
+            currentProductType_All = pt;
+
+            let productsContainer = document.createElement('div');
+            productsContainer.classList.add('productsContainer_All');
+            insertAfter(productsContainer, productType);
+
+            pt.products.forEach(p => {
+                let product = document.createElement('button');
+                product.setAttribute('b-iwbwbsraei', '');
+                product.style.width = "calc(100% - 90px)";
+                product.style.backgroundColor = "rgba(96,96,96,0.35)";
+                product.textContent = p.productName;
+                if (isAdding) {
+                    if (Array.isArray(meal.products)) {
+                        if (meal.products.some(product => product.productName == p.productName)) {
+                            product.style.backgroundColor = "rgba(100,134,83,0.75)";
+                        }
+                    }
+                }
+
+                product.onclick = () => {
+                    if (isAdding) {
+                        if (meal.products.some(product => product.productName == p.productName)) {
+                            let index = meal.products.indexOf(p);
+                            meal.products.splice(index, 1);
+                            product.style.backgroundColor = "rgba(96,96,96,0.35)";
+                        }
+                        else {
+                            meal.products.push(p)
+                            product.style.backgroundColor = "rgba(100,134,83,0.75)";
+                        }
+                    } else {
+                        let element = document.querySelector('.productInfoContainer_All');
+                        if (element != undefined) {
+                            element.remove();
+                            if (currentProduct_All == p) {
+                                return;
+                            }
+                        }
+
+                        currentProduct_All = p;
+
+                        let productInfoContainer_All = document.createElement('div');
+                        productInfoContainer_All.classList.add('productInfoContainer_All');
+                        insertAfter(productInfoContainer_All, product);
+
+                        let productInfo = ["Белки: " + p.protein, "Жиры: " + p.fats, "Углеводы: " + p.carbs, "Калории: " + p.calories];
+                        productInfo.forEach(pi => {
+                            let productInfoElement = document.createElement('button');
+                            productInfoElement.setAttribute('b-iwbwbsraei', '');
+                            productInfoElement.style.width = "calc(100% - 120px)";
+                            productInfoElement.style.backgroundColor = "rgba(96,96,96,0.3)";
+                            productInfoElement.textContent = pi;
+
+                            productInfoContainer_All.appendChild(productInfoElement);
+                        })
+                    }
+                }
+
+                productsContainer.appendChild(product);
+            })
+        }
+
+        productTypesContainer.appendChild(productType);
+    })
+
+    if (isAdding) {
+        let nextButton = document.createElement('button');
+        nextButton.setAttribute('b-iwbwbsraei', '');
+        nextButton.style.width = "calc(100% - 150px)";
+        nextButton.textContent = "Далее";
+
+        nextButton.onclick = () => {
+            productTypesContainer.remove();
+            productTypesNextButtonClick(meal, foodNoteDate);
+            mealProductsCount = meal.products.length;
+        }
+
+        productTypesContainer.appendChild(nextButton);
+    }
+}
+
+let mealProductsCount;
+
+function productTypesNextButtonClick(meal, foodNoteDate) {
+    let foodNotesContainer = document.getElementById('foodNotesContainer');
+
+    let productsContainer = document.createElement('div');
+    foodNotesContainer.appendChild(productsContainer);
+
+    let paragraph = document.createElement('p');
+    paragraph.textContent = "Укажите граммовку каждого из продуктов";
+
+    productsContainer.appendChild(paragraph);
+
+    meal.products.forEach(p => {
+        let product = document.createElement('div');
+        product.setAttribute('b-iwbwbsraei', '');
+        product.classList.add('productContainer');
+
+        let paragraph = document.createElement('p');
+        paragraph.setAttribute('b-iwbwbsraei', '');
+        paragraph.textContent = p.productName + ":";
+        paragraph.style.margin = "0";
+        product.appendChild(paragraph);
+
+        let buttonContainer = document.createElement('div');
+        buttonContainer.setAttribute('b-iwbwbsraei', '');
+        buttonContainer.classList.add('productButtonContainer');
+        product.appendChild(buttonContainer);
+
+        let input = document.createElement('input');
+        input.setAttribute('b-iwbwbsraei', '');
+        input.classList.add('productButtonInput');
+        buttonContainer.appendChild(input);
+
+        input.addEventListener('input', () => {
+            p.gramms = input.value;
+        })
+
+        productsContainer.appendChild(product);
+    })
+
+    let endButton = document.createElement('button');
+    endButton.setAttribute('b-iwbwbsraei', '');
+    endButton.style.width = "calc(100% - 150px)";
+    endButton.textContent = "Завершить";
+
+    endButton.onclick = () => {
+        productsContainer.remove();
+        let foodNoteSlider = document.getElementById('foodNoteSlider');
+        foodNoteSlider.style.display = "block";
+
+        let mealProductsFormData = new FormData();
+        mealProductsFormData.append("foodNoteDate", foodNoteDate);
+        mealProductsFormData.append("mealName", meal.mealName);
+        mealProductsFormData.append("mealProducts", JSON.stringify(meal.products.map(p => p.productName)));
+        mealProductsFormData.append("mealProductsGramms", JSON.stringify(meal.products.map(p => (p.gramms).toString())));
+
+        //Отправка данных на сервер
+        fetch('/Main/CMealProduct', {
+            method: 'POST',
+            body: mealProductsFormData
+        })
+
+        uploadHealthyFoodNotes();
+    }
+
+    productsContainer.appendChild(endButton);
+}
+
+function addFoodNote() {
+    if (foodNotes.length != 0) {
+        if (foodNotes[foodNotes.length - 1].date != getCurrentDate()) {
+            let healthyFoodSlidesContainer = document.getElementById('healthyFoodSlidesContainer');
+            healthyFoodSlidesContainer.innerHTML = "";
+
+            foodNotes.push(new FoodNote(getCurrentDate(), []));
+
+            let newFoodNoteFormData = new FormData();
+
+            //Отправка данных на сервер
+            fetch('/Main/CFoodNote', {
+                method: 'POST',
+                body: newFoodNoteFormData
+            })
+
+            uploadHealthyFoodNotes();
+        } else {
+            alert("Запись с сегодняшней датой уже создана.");
+        }
+    }
+    else {
+        foodNotes.push(new FoodNote(getCurrentDate(), []));
+        let newFoodNoteFormData = new FormData();
+
+        //Отправка данных на сервер
+        fetch('/Main/CFoodNote', {
+            method: 'POST',
+            body: newFoodNoteFormData
+        })
+        uploadHealthyFoodNotes();
+    }
+}
+
+function openAllProduct() {
+    let allProductsContainer = document.getElementById('allProductsContainer');
+    let healthyFoodButtons = document.querySelectorAll('.healthyFoodTemplateButton');
+    healthyFoodButtons.forEach(bt => {
+        bt.style.display = "none";
+    })
+    allProductsContainer.style.display = "block";
+}
+
+function allProductsBackClick() {
+    let allProductsContainer = document.getElementById('allProductsContainer');
+    let foodNoteButton = document.getElementById('foodNotes');
+    let calloryButton = document.getElementById('callory');
+    let allProducts = document.getElementById('allProducts');
+
+    allProductsContainer.style.display = "none";
+    foodNoteButton.style.display = "block";
+    calloryButton.style.display = "block";
+    allProducts.style.display = "block";
+}
+
+function openCallory() {
+    let calloryContainer = document.getElementById('calloryContainer');
+    let healthyFoodButtons = document.querySelectorAll('.healthyFoodTemplateButton');
+    healthyFoodButtons.forEach(bt => {
+        bt.style.display = "none";
+    })
+    calloryContainer.style.display = "block";
+}
+
+function callorysBackClick() {
+    let calloryContainer = document.getElementById('calloryContainer');
+    let foodNoteButton = document.getElementById('foodNotes');
+    let calloryButton = document.getElementById('callory');
+    let allProducts = document.getElementById('allProducts');
+
+    calloryContainer.style.display = "none";
+    foodNoteButton.style.display = "block";
+    calloryButton.style.display = "block";
+    allProducts.style.display = "block";
+}
+
+let userGender;
+let userAge;
+let userActivityLevel;
+let isCalloryChangeStarting = false;
+function calloryChange() {
+    if (!isCalloryChangeStarting) {
+        isCalloryChangeStarting = true;
+        let calloryContainer = document.getElementById('calloryContainer');
+        let calloryResultContainer = document.getElementById('calloryResultContainer');
+        let calloryContainerParagraph = calloryContainer.querySelector('p');
+        calloryContainerParagraph.textContent = "Укажите ваш пол";
+        calloryResultContainer.innerHTML = "";
+
+        let container = document.createElement('div');
+        container.style.display = "flex";
+        calloryContainer.appendChild(container);
+
+        let buttonTemplate = ["Мужчина", "Женщина"];
+        buttonTemplate.forEach(bt => {
+            let button = document.createElement('button');
+            button.setAttribute('b-iwbwbsraei', '');
+            button.style.width = "50%";
+            button.style.marginLeft = "5px";
+            button.style.marginRight = "5px";
+            button.textContent = bt;
+
+            button.onclick = () => {
+                userGender = bt;
+                container.remove();
+                calloryAgeStep();
+            }
+
+            container.appendChild(button);
+        })
+    } else {
+        alert("Для начала завершите это действие.");
+    }
+}
+
+function calloryAgeStep() {
+    let calloryContainer = document.getElementById('calloryContainer');
+    let calloryContainerParagraph = calloryContainer.querySelector('p');
+    calloryContainerParagraph.style.display = "none";
+
+    let container = document.createElement('div');
+    calloryContainer.appendChild(container);
+
+    let age = document.createElement('div');
+    age.setAttribute('b-iwbwbsraei', '');
+    age.classList.add('productContainer');
+
+    let paragraph = document.createElement('p');
+    paragraph.setAttribute('b-iwbwbsraei', '');
+    paragraph.textContent = "Укажите ваш возраст";
+    paragraph.style.margin = "0";
+    paragraph.style.animation = "none";
+    age.appendChild(paragraph);
+
+    let buttonContainer = document.createElement('div');
+    buttonContainer.setAttribute('b-iwbwbsraei', '');
+    buttonContainer.classList.add('productButtonContainer');
+    age.appendChild(buttonContainer);
+
+    let input = document.createElement('input');
+    input.setAttribute('b-iwbwbsraei', '');
+    input.type = "number";
+    input.style.textAlign = "left";
+    input.style.margin = "5px";
+    input.classList.add('productButtonInput');
+    buttonContainer.appendChild(input);
+
+    let button = document.createElement('button');
+    button.classList.add('okButton');
+    button.setAttribute('b-iwbwbsraei', '');
+    button.style.margin = "5px";
+    button.style.animation = "none";
+    button.textContent = "Ок";
+
+    button.onclick = () => {
+        if (input.value != "") {
+            userAge = parseInt(input.value);
+            container.remove();
+            calloryActivitylevelStep();
+        }
+        else {
+            alert("Сначала укажите количество лет.");
+        }
+    }
+
+    buttonContainer.appendChild(button);
+
+    container.appendChild(age);
+}
+
+function calloryActivitylevelStep() {
+    let calloryContainer = document.getElementById('calloryContainer');
+    let calloryContainerParagraph = calloryContainer.querySelector('p');
+    calloryContainerParagraph.textContent = "Выберите ваш уровень активности";
+    calloryContainerParagraph.style.display = "block";
+
+    let container = document.createElement('div');
+    calloryContainer.appendChild(container);
+
+    let activityLevels = ["Сидячий образ жизни", "Легкая активность (1-3 раза в неделю)", "Умеренная активность (3-5 раз в неделю)", "Высокая активность (6-7 раз в неделю)", "Очень высокая активность"];
+
+    activityLevels.forEach(al => {
+        let button = document.createElement('button');
+        button.setAttribute('b-iwbwbsraei', '');
+        button.style.width = "calc(100% - 50px)";
+        button.textContent = al;
+        button.onclick = () => {
+            container.remove();
+            userActivityLevel = al;
+
+            let activityCoefficient = 1;
+            if (userActivityLevel == "Сидячий образ жизни") {
+                activityCoefficient = 1.2;
+            } else if (userActivityLevel == "Легкая активность (1-3 раза в неделю)") {
+                activityCoefficient = 1.375;
+            } else if (userActivityLevel == "Умеренная активность (3-5 раз в неделю)") {
+                activityCoefficient = 1.55;
+            } else if (userActivityLevel == "Высокая активность (6-7 раз в неделю)") {
+                activityCoefficient = 1.725;
+            } else if (userActivityLevel == "Очень высокая активность") {
+                activityCoefficient = 1.9;
+            } 
+
+            let basalMetabolism = 1;
+            if (userGender == "Мужчина") {
+                basalMetabolism = 66.5 + (13.75 * userWeights[userWeights.length - 1].weight) + (5.003 * userHeights[userHeights.length - 1].height) - (6.775 * userAge);
+            } else if (userGender == "Женщина") {
+                basalMetabolism = 655.1 + (9.563 * userWeights[userWeights.length - 1].weight) + (1.85 * userHeights[userHeights.length - 1].height) - (4.676 * userAge);
+            }
+
+            let supportingWeight = (basalMetabolism * activityCoefficient);
+            calloryResultStep((supportingWeight).toFixed(2));
+
+            let supportingWeightFormData = new FormData();
+            supportingWeightFormData.append("newSupportingWeight", supportingWeight.toFixed(2).toString());
+
+            //Отправка данных на сервер
+            fetch('/Main/USupportingWeight', {
+                method: 'POST',
+                body: supportingWeightFormData
+            })
+
+        }
+        container.appendChild(button);
+    })
+}
+
+function calloryResultStep(supportingWeight) {
+    isCalloryChangeStarting = false;
+    let calloryContainer = document.getElementById('calloryContainer');
+    let calloryResultContainer = document.getElementById('calloryResultContainer');
+    let calloryContainerParagraph = calloryContainer.querySelector('p');
+    calloryContainerParagraph.textContent = "Калорийность для управления вашим весом";
+
+    calloryResultContainer.style.display = "block";
+
+    let resultArray = ["Сброс: " + (supportingWeight * 0.8).toFixed(2), "Поддержание: " + supportingWeight, "Набор: " + (supportingWeight * 1.2).toFixed(2)]
+
+    resultArray.forEach(r => {
+        let button = document.createElement('button');
+        button.style.width = "calc(100% - 50px)";
+        button.setAttribute('b-iwbwbsraei', '');
+        button.textContent = r;
+
+        calloryResultContainer.appendChild(button);
+    })    
+}
+
+function ddd() {
+    const drugName = 'Аспирин'; // Название лекарства
+    const url = `https://api.fda.gov/drug/drugsfda.json?search=openfda.brand_name:"${drugName}"&limit=5`;
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Сеть ответила с ошибкой: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.results && data.results.length > 0) {
+                console.log('Данные о лекарстве:', data.results);
+                // Здесь вы можете обработать и отобразить данные о лекарстве
+            } else {
+                console.log('Лекарство не найдено.');
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
 }

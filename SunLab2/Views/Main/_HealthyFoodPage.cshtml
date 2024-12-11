@@ -1,0 +1,55 @@
+﻿<div class="HealthyFoodPage">
+    <h2 class="HealthyFoodPageName">Здоровая еда</h2>
+
+    <div class="healthyFoodButtonsContainer">
+        <button class="healthyFoodTemplateButton" id="foodNotes" onclick="openFoodNotes()">Заметки питания</button>
+        <div id="foodNotesContainer">
+            <div class="ButtonsContainer healthyFoodBottonsContainer">
+                <button class="backButton foodNoteBackButton" onclick="foodNoteBackClick()">Назад</button>
+                <button class="addButton foodNoteAddButton" onclick="addFoodNote()">Добавить</button>
+            </div>
+
+            <div id="foodNoteSlider">
+                <div class="button-container">
+                    <button class="Arrow left" id="healthyFoodPrevBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                    </button>
+                    <button class="Arrow right" id="healthyFoodNextBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="2" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="slider">
+                    <div class="slides" id="healthyFoodSlidesContainer">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="healthyFoodTemplateButton" id="callory" onclick="openCallory()">Калорийность</button>
+        <div id="calloryContainer">
+            <div class="ButtonsContainer healthyFoodBottonsContainer">
+                <button class="backButton" onclick="callorysBackClick()">Назад</button>
+                <button onclick="calloryChange()">Изменить</button>
+            </div>
+            <p>Калорийность для управления вашим весом</p>
+            <div id="calloryResultContainer">
+
+            </div>
+        </div>
+
+
+        <button class="healthyFoodTemplateButton" id="allProducts" onclick="openAllProduct()">Продукты</button>
+        <div id="allProductsContainer">
+            <button onclick="allProductsBackClick()">Назад</button>
+            <div id="productsContainer">
+
+            </div>
+        </div>
+
+        <button class="healthyFoodTemplateButton" id="allProducts" onclick="ddd()">Поиск</button>
+    </div>
+</div>

@@ -86,6 +86,7 @@ namespace SunLab2.Controllers
             HttpContext.Session.SetString("UserName", userName);
             var user = new User { UserName = userName, ChatID = Convert.ToInt64(userChatId)}; // Создание нового пользователя
             User currentUser;
+            List<Product> products = _productRepository.GetAllProducts();
             if (_userRepository.UserExists(user))
             {
                 Debug.WriteLine("User already exists");
@@ -101,25 +102,18 @@ namespace SunLab2.Controllers
                     {
                         _stepRepository.Add_Step(new Step { Day = i, StepsNum = 0, UserID = user.UserID });
                     }
-                    return Ok();
+                    currentUser = _userRepository.ConnectUserInformation(user);
                 }
                 else
                 {
                     Debug.WriteLine($"Error added user: {userName}");
-                    return null;
+                    return Ok();
                 }
             }
 
             string username = HttpContext.Session.GetString("UserName");
 
-
-            // Получаем пользователя по имени
             User returnedUser = _userRepository.ConnectUserInformation(currentUser);
-
-            if (returnedUser == null)
-            {
-                return NotFound();
-            }
 
             var maxDisease = _userRepository.GetCurrentVirusDisease(currentUser);
             List<Disease> userChronicDiseases = _userRepository.ConnectUserInformation(_userRepository.GetUserByUsername(username)).Diseases.Where(cd => cd.DiseaseType == "Chronic").ToList();
@@ -129,9 +123,7 @@ namespace SunLab2.Controllers
                 maxDisease = new Disease();
             }
 
-            List<Product> products = _productRepository.GetAllProducts();
-
-            // Возвращаем данные в формате JSON
+            //Возврат данных в формате JSON
             return Json(new
             {
                 userSleepTime = returnedUser.sleepTime,
@@ -248,7 +240,7 @@ namespace SunLab2.Controllers
                 productTypes = products.GroupBy(p => p.ProductType)
                 .Select(g => new
                 {
-                    productType = g.Key, // Название типа продукта (группы)
+                    productType = g.Key,
                     products = g.Select(p => new
                     {
                         productName = p.ProductName,

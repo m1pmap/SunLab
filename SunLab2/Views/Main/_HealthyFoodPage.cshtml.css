@@ -48,7 +48,7 @@ button {
 }
 
 .button-container {
-    display: flex; /* Используем flexbox для размещения кнопок в строку */
+    display: none; /* Используем flexbox для размещения кнопок в строку */
     position: absolute;
     top: 150px;
     left: 50%;
@@ -198,5 +198,11 @@ button {
 }
 
 #productsContainer p {
+    animation: fadeIn 0.5s ease;
+}
+
+#calloryChart {
+    position: absolute;
+    margin: 5px;
     animation: fadeIn 0.5s ease;
 }

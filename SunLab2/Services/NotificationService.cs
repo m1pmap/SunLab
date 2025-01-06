@@ -3,6 +3,10 @@ using SunLab2.DAL;
 using SunLab2.DAL.Repository;
 using Telegram.Bot;
 using System.Globalization;
+using System.Diagnostics;
+using SunLab2.DAL.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using SunLab2.DAL.Model;
 
 
 namespace SunLab2.Services
@@ -19,58 +23,64 @@ namespace SunLab2.Services
             _botClient = botClient;
             _logger = logger;
         }
+        private Timer _timer;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            await _botClient.SendTextMessageAsync(1220910705, "Привет");
-            //User currentUser = _userRepository.GetUserByUsername(username);
+            // Запускаем таймер только один раз
+            _timer = new Timer(CheckTime, stoppingToken, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+        }
 
-            while (!stoppingToken.IsCancellationRequested)
+        private async void CheckTime(object state)
+        {
+            var stoppingToken = (CancellationToken)state;
+
+            try
             {
+                var currentTime = DateTime.Now.ToString("HH:mm");
+
                 using (var scope = _serviceProvider.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
-                    // Получаем список уникальных Twitch-имен
-                    //var twitchUsers = dbContext.Twitch_Subscriptions
-                    //    .Select(s => s.TwitchChannel)
-                    //    .Distinct()
-                    //    .ToList();
+                    var users = dbContext.Users.ToList();
 
-                    //foreach (var twitchChannel in twitchUsers)
-                    //{
-                    //    try
-                    //    {
-                    //        var accessToken = await _twitchService.GetAccessToken();
-                    //        var stream = await _twitchService.CheckStreamStatus(twitchChannel, accessToken);
+                    foreach (var user in users)
+                    {
+                        if (user.sleepTime == currentTime)
+                        {
+                            // Здесь отправляем сообщение пользователю
+                            await _botClient.SendTextMessageAsync(user.ChatID, "Пришло время для сна! Позаботьтесь о себе и отдохните.");
+                        }
 
-                    //        if (stream.startedAt != null)
-                    //        {
-                    //            DateTime nowUtc = DateTime.UtcNow;
+                        User connectedUser = dbContext.Users
+                                            .Include(u => u.Diseases)
+                                                .ThenInclude(d => d.Drugs)
+                                                    .ThenInclude(dr => dr.DrugTimes)
+                                            .Include(u => u.FoodNotes)
+                                                .ThenInclude(fn => fn.Meals)
+                                                    .ThenInclude(m => m.MealProducts)
+                                                        .ThenInclude(mp => mp.Product)
+                                            .FirstOrDefault(u => u.UserID == user.UserID);
 
-                    //            if ((nowUtc - stream.startedAt.Value).TotalMinutes <= 5)
-                    //            {
-                    //                var subscribers = dbContext.Twitch_Subscriptions
-                    //                    .Where(s => s.TwitchChannel == twitchChannel)
-                    //                    .Select(s => s.User.ChatId)
-                    //                    .ToList();
-
-                    //                foreach (var chatId in subscribers)
-                    //                {
-                    //                    await _botClient.SendTextMessageAsync(
-                    //                    chatId,
-                    //                        $"📣 Стрим начался:\n{stream.streamInfo}\n🔗 <a href=\"https://www.twitch.tv/{twitchChannel}\">Ссылка на стрим</a>",
-                    //                        parseMode: Telegram.Bot.Types.Enums.ParseMode.Html
-                    //                    );
-                    //                }
-                    //            }
-                    //        }
-                    //    }
-                    //    catch (Exception ex)
-                    //    {
-                    //        _logger.LogError(ex, $"Ошибка при обработке Twitch пользователя {twitchChannel}");
-                    //    }
-                    //}
+                        foreach(var disease in connectedUser.Diseases)
+                        {
+                            foreach(var drug in disease.Drugs)
+                            {
+                                foreach(var drugTime in drug.DrugTimes)
+                                {
+                                    if(drugTime.Time == currentTime)
+                                    {
+                                        await _botClient.SendTextMessageAsync(user.ChatID, $"Время принимать лекарство! Пожалуйста, не забудьте принять {drug.DrugName}");
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"ОШИБКА: {ex.Message}");
             }
         }
     }

@@ -122,7 +122,7 @@ let mentalDiseases = [];
 let userWeights = [];
 let userHeights = [];
 let productTypes = [];
-let foodNotes = [new FoodNote("06.12.2024", [new Meal("Завтрак", [new Product("Курица", 31, 3.6, 0, 165, 120), new Product("Молоко", 3, 0.1, 4.5, 30, 50)]), new Meal("Обед", [new Product("Молоко", 3, 0.1, 4.5, 30, 50)])]), new FoodNote("07.12.2024", [new Meal("Завтрак", [new Product("Курица", 31, 3.6, 0, 165, 120)]), new Meal("Ужин", [new Product("Молоко", 3, 0.1, 4.5, 30, 50)])])];
+let foodNotes = [];
 
 function getCurrentDate() {
     const today = new Date();
@@ -151,13 +151,13 @@ function checkVisibility() {
     const activity = document.querySelector('.activity');
     const bodyHealth = document.querySelector('.bodyHealth');
     const healthyFood = document.querySelector('.healthyFood');
-    const analitics = document.querySelector('.analitics');
+    //const analitics = document.querySelector('.analitics');
 
     if (window.scrollY == 0) {
         activity.classList.remove('active');
         bodyHealth.classList.remove('active');
         healthyFood.classList.remove('active');
-        analitics.classList.remove('active');
+        //analitics.classList.remove('active');
     }
     else {
         const targetElement = document.querySelector('.arrowImage');
@@ -211,6 +211,52 @@ function sleepTimeLostFocus() {
     })
 }
 
+function findMostFrequentWord(words) {
+    const wordCount = {};
+
+    for (const word of words) {
+        if (word.trim() !== "") {
+            wordCount[word] = (wordCount[word] || 0) + 1;
+        }
+    }
+
+    let mostFrequentWord = "";
+    let maxCount = 0;
+
+    for (const [word, count] of Object.entries(wordCount)) {
+        if (count > maxCount) {
+            maxCount = count;
+            mostFrequentWord = word;
+        }
+    }
+
+    return mostFrequentWord;
+}
+
+function updateHealthAdvices() {
+    let adviceImage = document.getElementById('adviceImage');
+    let adviceText = document.getElementById('adviceText');
+
+    const goodMonthMoods = ['happy2', 'bigSmile1', 'smile1', 'cool2', 'kiss1', 'clown1'];
+    const midMonthMoods = ['sleepy1', 'surprised1', 'confused1', 'crying1'];
+    const badMonthMoods = ['sick1', 'cursing1', 'devil1', 'skull1'];
+    let mostFrequentWord = findMostFrequentWord(monthMoods);
+    if (mostFrequentWord == "") {
+        adviceImage.src = '/assets/images/crying1.png';
+        adviceText.textContent = "Пока вы ещё не указали ваше настроение((";
+    }
+    else {
+        adviceImage.src = '/assets/images/' + mostFrequentWord + '.png';
+        if (goodMonthMoods.includes(mostFrequentWord)) {
+            adviceText.textContent = "Настроение, в котором вы чаще всего пребываете. Чаще всего у вас хорошее настроение, а значит вероятнее всего вы оптимист, хорошо заботитесь о своём здоровье и редко испытываете стресс.";
+        } else if (midMonthMoods.includes(mostFrequentWord)) {
+            adviceText.textContent = "Настроение, в котором вы чаще всего пребываете. Моментами вы испытываете отрицательные эмоции, что невсегда хорошо, но показывает вашу эмоциональную чувствительность и стойкость перед жизненными трудностями. У вас всё получится.";
+        } else if (badMonthMoods.includes(mostFrequentWord)) {
+            adviceText.textContent = "Настроение, в котором вы чаще всего пребываете. Вы очень часто испытываете отрицательные эмоции, что может указывать на стресс, внутренние конфликты или даже психоэмоциональные расстройства. Постарайтесь принимать свои эмоции и поищите поддержку среди близких вам людей.";
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const stepsInput = document.querySelector('.steps');
     const newWeightInput = document.querySelector('.newWeightInput');
@@ -221,36 +267,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tg.expand();
 
-    //tg.MainButton.show();
-    //tg.MainButton.text = "mipmap";
-    //tg.MainButton.onClick(() => {
-    //    if (isInputOpen) {
-    //        stepsInput.blur();
-    //        newWeightInput.blur();
-    //        newHeightInput.blur();
-    //        diseasesWriterInput.blur();
-
-    //        for (let i = 0; i < entityInputs.length; i++) {
-    //            entityInputs[i].blur();
-    //        }
-
-    //        tg.MainButton.text = "mipmap";
-    //        isInputOpen = false;
-    //    }
-    //    else {
-    //        sendMessage(tg.initDataUnsafe.user.id, bedTimeInput.value);
-    //    }
-    //});
-
-    //alert(tg.initDataUnsafe.user.id);
-
     tg.ready();
-    userName = "m1pmap";//tg.initDataUnsafe.user.username;
+    userName = tg.initDataUnsafe.user.username;
     userChatID = tg.initDataUnsafe.user.id;
 
     let formData = new FormData();
     formData.append("userName", userName); //wedl_666 k0tegg Saeredf
-    formData.append("userChatId", userChatID);
+    formData.append("userChatId", userChatID);//userChatID);
 
     fetch('/Main/AddUser', {
             method: 'POST',
@@ -265,20 +288,27 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
         if (data.virusDisease.diseaseName != "") {
             virusDisease = new Disease(data.virusDisease.diseaseName, data.virusDisease.symptoms, data.virusDisease.therapies, data.virusDisease.drugs, data.virusDisease.bloodAnalises, data.virusDisease.urineAnalises);
+            diseaseUpload("virus");
         }    
+        if (Array.isArray(data.chronicDiseases)) {
+            data.chronicDiseases.forEach(cd => {
+                chronicDiseases.push(new Disease(cd.diseaseName, cd.symptoms, cd.therapies, cd.drugs, cd.bloodAnalises, cd.urineAnalises));
+            });
+            diseaseUpload("chronic");
+        }
+        if (Array.isArray(data.chronicDiseases)) {
+            data.mentalDiseases.forEach(md => {
+                mentalDiseases.push(new Disease(md.diseaseName, md.symptoms, md.therapies, md.drugs, md.bloodAnalises, md.urineAnalises));
+            });
+            diseaseUpload("mental");
+        }
 
-        data.chronicDiseases.forEach(cd => {
-            chronicDiseases.push(new Disease(cd.diseaseName, cd.symptoms, cd.therapies, cd.drugs, cd.bloodAnalises, cd.urineAnalises));
-        });
-
-        data.mentalDiseases.forEach(md => {
-            mentalDiseases.push(new Disease(md.diseaseName, md.symptoms, md.therapies, md.drugs, md.bloodAnalises, md.urineAnalises));
-        });
-
-        let mentalEmotions = data.mentalEmotions;
-        mentalEmotions.forEach(me => {
-            monthMoods[me.dayNum] = me.emotion;
-        });
+        if (Array.isArray(data.mentalEmotions)) {
+            let mentalEmotions = data.mentalEmotions;
+            mentalEmotions.forEach(me => {
+                monthMoods[me.dayNum] = me.emotion;
+            });
+        }
 
         data.userWeight.forEach(uw => {
             userWeights.push(new Weight(uw.weight, uw.data));
@@ -296,24 +326,29 @@ document.addEventListener('DOMContentLoaded', () => {
             productTypes.push(new ProductType(pt.productType, products));
         })
 
-        foodNotes.length = 0;
-        data.foodNotes.forEach(fn => {
-            let meals = [];
-            fn.meals.forEach(m => {
-                let products = [];
+        if (Array.isArray(data.foodNotes)) {
+            foodNotes.length = 0;
+            data.foodNotes.forEach(fn => {
+                let meals = [];
+                fn.meals.forEach(m => {
+                    let products = [];
 
-                m.products.forEach(p => {
-                    products.push(new Product(p.productName, p.protein, p.fats, p.carbs, p.calories, p.gramms));
+                    m.products.forEach(p => {
+                        products.push(new Product(p.productName, p.protein, p.fats, p.carbs, p.calories, p.gramms));
+                    })
+
+                    meals.push(new Meal(m.mealName, products));
                 })
-
-                meals.push(new Meal(m.mealName, products));
+                foodNotes.push(new FoodNote(fn.date, meals));
             })
-            foodNotes.push(new FoodNote(fn.date, meals));
-        })
+            console.log(foodNotes);
+            if (foodNotes.length != 0) {
+                uploadHealthyFoodNotes();
+            }
+        }
 
         calloryResultStep(data.userSupportingWeight);
 
-        uploadHealthyFoodNotes();
         showAllProducts(false);
 
         uploadWeight();
@@ -328,15 +363,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         changeStepsAdvicies();
         changeWHAdvicies();
-
-        diseaseUpload("virus");
-        diseaseUpload("chronic");
-        diseaseUpload("mental");
+        updateHealthAdvices();
         alert("Данные загружены.");
     })
     .catch(error => {
         alert(error);
         console.error('Error:', error);
+
+        adjustWidth(stepsInput, 5);
+        adjustWidth(newWeightInput, 3);
+        adjustWidth(newHeightInput, 3);
+
+        changeStepsAdvicies();
+        changeWHAdvicies();
     });
 
     document.querySelector('.addNewWeightButton').addEventListener('click', () => {
@@ -503,10 +542,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const viralDiseasesButton = document.querySelector('.viralDiseasesButton');
     const chronicDiseasesButton = document.querySelector('.chronicDiseasesButton');
     const mentalDiseasesButton = document.querySelector('.mentalDiseasesButton');
+    const healthAdvices = document.getElementById('healthAdvices');
     //const otherButton = document.querySelector('.otherButton');
 
     viralDiseasesButton.addEventListener('click', () => {
-        hideAllHealthButtons(viralDiseasesButton, chronicDiseasesButton, mentalDiseasesButton/*, otherButton*/);
+        hideAllHealthButtons(viralDiseasesButton, chronicDiseasesButton, mentalDiseasesButton, healthAdvices/*, otherButton*/);
         changeHealthPageName("Вирусные заболевания");
         setTimeout(function () {
             openViralDiseasesPage();
@@ -516,7 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     chronicDiseasesButton.addEventListener('click', () => {
-        hideAllHealthButtons(chronicDiseasesButton, viralDiseasesButton, mentalDiseasesButton/*, otherButton*/);
+        hideAllHealthButtons(chronicDiseasesButton, viralDiseasesButton, mentalDiseasesButton, healthAdvices/*, otherButton*/);
         changeHealthPageName("Хронические болезни");
         setTimeout(function () {
             openChronicDiseasesPage();
@@ -524,7 +564,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     mentalDiseasesButton.addEventListener('click', () => {
-        hideAllHealthButtons(mentalDiseasesButton, chronicDiseasesButton, viralDiseasesButton/*, otherButton*/);
+        hideAllHealthButtons(mentalDiseasesButton, chronicDiseasesButton, viralDiseasesButton, healthAdvices/*, otherButton*/);
         changeHealthPageName("Психологические болезни");
         setTimeout(function () {
             openMentalDiseasesPage();
@@ -1114,9 +1154,9 @@ function hideAllHealthButtons(button1, button2, button3, button4) {
         button3.style.opacity = "0";
     }, 200);
 
-    //setTimeout(function () {
-    //    button4.style.opacity = "0";
-    //}, 300);
+    setTimeout(function () {
+        button4.style.opacity = "0";
+    }, 300);
 
     setTimeout(function () {
         healthButtons.style.display = "none";
@@ -1128,7 +1168,7 @@ function showAllHealthButtons(diseaseType) {
     const viralDiseasesButton = document.querySelector('.viralDiseasesButton');
     const chronicDiseasesButton = document.querySelector('.chronicDiseasesButton');
     const mentalDiseasesButton = document.querySelector('.mentalDiseasesButton');
-    //const otherButton = document.querySelector('.otherButton');
+    const healthAdvices = document.getElementById('healthAdvices');
     let delay = 550;
 
     if (diseaseType == "virus") {
@@ -1160,9 +1200,9 @@ function showAllHealthButtons(diseaseType) {
         mentalDiseasesButton.style.opacity = "1";
     }, delay + 300);
 
-    //setTimeout(function () {
-    //    otherButton.style.opacity = "1";
-    //}, delay + 400);
+    setTimeout(function () {
+        healthAdvices.style.opacity = "1";
+    }, delay + 400);
 }
 
 function changeHealthPageName(pageName) {
@@ -1582,6 +1622,7 @@ function createMoodTracker(smile) {
             moodDataGrid.classList.add('visible');
         }, 50);
 
+        updateHealthAdvices();
     }, time);
 }
 
@@ -2825,7 +2866,7 @@ function drugTimeClicked(drugDiv, diseaseType) {
                 oldDrugTime = input.value;
 
             });
-            input.addEventListener('change', function () {
+            input.addEventListener('blur', function () {
                 const index = currentDrug.drugTimes.findIndex(drugTime => drugTime == oldDrugTime);
                 currentDrug.drugTimes[index] = input.value;
 
@@ -2905,7 +2946,7 @@ function drugTimeClicked(drugDiv, diseaseType) {
                     oldDrugTime = input.value;
 
                 });
-                input.addEventListener('change', function () {
+                input.addEventListener('blur', function () {
                     const index = currentDrug.drugTimes.findIndex(drugTime => drugTime == oldDrugTime);
                     currentDrug.drugTimes[index] = input.value;
 
@@ -3510,15 +3551,18 @@ function insertAfter(newNode, referenceNode) {
 }
 
 function openFoodNotes() {
+    let calloryInfo = document.getElementById('calloryInfo');
     let foodNotesContainer = document.getElementById('foodNotesContainer');
     let healthyFoodButtons = document.querySelectorAll('.healthyFoodTemplateButton');
     healthyFoodButtons.forEach(bt => {
         bt.style.display = "none";
     })
+    calloryInfo.style.display = "none";
     foodNotesContainer.style.display = "block";
 }
 
 function foodNoteBackClick() {
+    let calloryInfo = document.getElementById('calloryInfo');
     let foodNotesContainer = document.getElementById('foodNotesContainer');
     let foodNoteButton = document.getElementById('foodNotes');
     let calloryButton = document.getElementById('callory');
@@ -3528,17 +3572,23 @@ function foodNoteBackClick() {
     foodNoteButton.style.display = "block";
     calloryButton.style.display = "block";
     allProducts.style.display = "block";
+    calloryInfo.style.display = "block";
 }
 
 let currentMeal;
 let currentProduct;
 
 function uploadHealthyFoodNotes() {
+    let buttonContainer = document.getElementById('healthyFoodSliderButtons');
+    buttonContainer.style.display = "flex";
+    let foodNotesContainer = document.getElementById('foodNotesContainer');
+    //foodNotesContainer.style.display = "block";
     let healthyFoodSlidesContainer = document.getElementById('healthyFoodSlidesContainer');
+    const chart = Chart.getChart('calloryChart');
+    chart.data.labels = [];
+    chart.data.datasets[0].data = [];
 
     foodNotes.forEach(fn => {
-
-
         let newSlide = document.createElement('div');
         newSlide.setAttribute('b-iwbwbsraei', '');
         newSlide.classList.add('slide');
@@ -3556,6 +3606,7 @@ function uploadHealthyFoodNotes() {
         allCaloryButton.classList.add('healthyFoodEntityButton');
         allCaloryButton.style.width = "calc(100% - 30px)";
         allCaloryButton.textContent = "Калорийность: " + allCalory.toFixed(2);
+        addData(chart, fn.date, allCalory.toFixed(2));
         newSlide.appendChild(allCaloryButton);
 
         let newParagraph = document.createElement('p');
@@ -3938,15 +3989,18 @@ function addFoodNote() {
 }
 
 function openAllProduct() {
+    let calloryInfo = document.getElementById('calloryInfo');
     let allProductsContainer = document.getElementById('allProductsContainer');
     let healthyFoodButtons = document.querySelectorAll('.healthyFoodTemplateButton');
     healthyFoodButtons.forEach(bt => {
         bt.style.display = "none";
     })
+    calloryInfo.style.display = "none";
     allProductsContainer.style.display = "block";
 }
 
 function allProductsBackClick() {
+    let calloryInfo = document.getElementById('calloryInfo');
     let allProductsContainer = document.getElementById('allProductsContainer');
     let foodNoteButton = document.getElementById('foodNotes');
     let calloryButton = document.getElementById('callory');
@@ -3956,18 +4010,22 @@ function allProductsBackClick() {
     foodNoteButton.style.display = "block";
     calloryButton.style.display = "block";
     allProducts.style.display = "block";
+    calloryInfo.style.display = "block";
 }
 
 function openCallory() {
+    let calloryInfo = document.getElementById('calloryInfo');
     let calloryContainer = document.getElementById('calloryContainer');
     let healthyFoodButtons = document.querySelectorAll('.healthyFoodTemplateButton');
     healthyFoodButtons.forEach(bt => {
         bt.style.display = "none";
     })
+    calloryInfo.style.display = "none";
     calloryContainer.style.display = "block";
 }
 
 function callorysBackClick() {
+    let calloryInfo = document.getElementById('calloryInfo');
     let calloryContainer = document.getElementById('calloryContainer');
     let foodNoteButton = document.getElementById('foodNotes');
     let calloryButton = document.getElementById('callory');
@@ -3977,13 +4035,20 @@ function callorysBackClick() {
     foodNoteButton.style.display = "block";
     calloryButton.style.display = "block";
     allProducts.style.display = "block";
+    calloryInfo.style.display = "block";
 }
+
 
 let userGender;
 let userAge;
 let userActivityLevel;
 let isCalloryChangeStarting = false;
 function calloryChange() {
+    if (userWeights.length == 0 || userHeights.length == 0) {
+        alert("Для начала укажите рост и вес в разделе вашей активности.");
+        return;
+    }
+
     if (!isCalloryChangeStarting) {
         isCalloryChangeStarting = true;
         let calloryContainer = document.getElementById('calloryContainer');
@@ -4104,10 +4169,11 @@ function calloryActivitylevelStep() {
                 activityCoefficient = 1.725;
             } else if (userActivityLevel == "Очень высокая активность") {
                 activityCoefficient = 1.9;
-            } 
+            }    
 
             let basalMetabolism = 1;
             if (userGender == "Мужчина") {
+                
                 basalMetabolism = 66.5 + (13.75 * userWeights[userWeights.length - 1].weight) + (5.003 * userHeights[userHeights.length - 1].height) - (6.775 * userAge);
             } else if (userGender == "Женщина") {
                 basalMetabolism = 655.1 + (9.563 * userWeights[userWeights.length - 1].weight) + (1.85 * userHeights[userHeights.length - 1].height) - (4.676 * userAge);
@@ -4149,28 +4215,4 @@ function calloryResultStep(supportingWeight) {
 
         calloryResultContainer.appendChild(button);
     })    
-}
-
-function ddd() {
-    const drugName = 'Аспирин'; // Название лекарства
-    const url = `https://api.fda.gov/drug/drugsfda.json?search=openfda.brand_name:"${drugName}"&limit=5`;
-
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Сеть ответила с ошибкой: ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.results && data.results.length > 0) {
-                console.log('Данные о лекарстве:', data.results);
-                // Здесь вы можете обработать и отобразить данные о лекарстве
-            } else {
-                console.log('Лекарство не найдено.');
-            }
-        })
-        .catch(error => {
-            console.error('Ошибка:', error);
-        });
 }

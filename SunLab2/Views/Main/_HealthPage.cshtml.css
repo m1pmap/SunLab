@@ -4,7 +4,7 @@
     text-align: center;
     color: rgba(115, 114, 114, 0.75);
     width: 100%;
-    min-height: 400px;
+    min-height: 450px;
 }
 
 p{
@@ -659,4 +659,31 @@ button p,
 
 .analiseWriterNext{
     animation: none;
+}
+
+#healthAdvices {
+    margin-top: 15px;
+    display: flex;
+    opacity: 1;
+    transition: 0.7s ease;
+}
+
+#healthAdvices button{
+    margin: 0;
+    padding: 0;
+    width: 50px;
+    cursor: pointer; /* Указатель при наведении */
+    border: none; /* Убираем границу */
+    background-color: transparent; /* Прозрачный фон */
+    opacity: 1; /* Начальная прозрачность */
+    animation: fadeIn 0.5s ease;
+    flex-shrink: 0;
+}
+
+#healthAdvices p{
+    margin: 0;
+    text-align: left;
+    animation: fadeIn 0.5s ease;
+    margin-left: 10px;
+    margin-right: 10px;
 }

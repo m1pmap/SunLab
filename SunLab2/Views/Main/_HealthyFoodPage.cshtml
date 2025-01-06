@@ -10,7 +10,7 @@
             </div>
 
             <div id="foodNoteSlider">
-                <div class="button-container">
+                <div class="button-container" id="healthyFoodSliderButtons">
                     <button class="Arrow left" id="healthyFoodPrevBtn">
                         <svg width="24" height="24" viewBox="0 0 24 24">
                             <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" />
@@ -49,7 +49,11 @@
 
             </div>
         </div>
-
-        <button class="healthyFoodTemplateButton" id="allProducts" onclick="ddd()">Поиск</button>
+        <div id="calloryInfo">
+            <p>Ваша калорийность по дням за всё время</p>
+            <div>
+                <canvas id="calloryChart"></canvas>
+            </div>
+        </div>
     </div>
 </div>

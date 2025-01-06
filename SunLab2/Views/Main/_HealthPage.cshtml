@@ -22,6 +22,13 @@
         @* <button class="otherButton"> Другое
              <img src="~/assets/images/otherButton2.png" width="250px">
         </button> *@
+
+        <div id="healthAdvices">
+            <button>
+                <img id="adviceImage" src="/assets/images/sleepy1.png" alt="Sleepy" height="50px">
+            </button>
+            <p id="adviceText">Настроение, в котором вы чаще всего пребываете.</p>
+        </div>
     </div>
 
     <div class="diseases viralDiseases">
@@ -291,6 +298,8 @@
             </button>
         </div>
 
+        <p class="calmingInstructor">Расслабьтесь и устройтесь поудобнее</p>
+
         <button class="moodTrackerButton" onclick="showMoods()">
             <p>Настроение сегодня</p>
         </button>
@@ -361,7 +370,6 @@
             <div class="moodDataGrid"></div>
         </div>
 
-        <p class="calmingInstructor">Расслабьтесь и устройтесь поудобнее</p>
 
         <button class="symptom" id="myMentalDiseases" onclick="showMyDiseases('mental')">Мои болезни</button>
         <div id="myMentalDiseasesContainer"></div>

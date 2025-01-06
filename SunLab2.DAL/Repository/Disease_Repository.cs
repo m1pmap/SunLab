@@ -32,10 +32,5 @@ namespace SunLab2.DAL.Repository
                 return false;
             }
         }
-
-        Disease IDisease.GetCurrentDisease(User user)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

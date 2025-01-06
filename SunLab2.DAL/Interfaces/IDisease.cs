@@ -10,6 +10,5 @@ namespace SunLab2.DAL.Interfaces
     public interface IDisease
     {
         bool Add_Disease( Disease disease);
-        Disease GetCurrentDisease(User user);
     }
 }
